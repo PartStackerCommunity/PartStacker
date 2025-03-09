@@ -11,7 +11,7 @@ inline constexpr std::array no_rotations = {
     geo::eye3<float>,
 };
 
-inline constexpr std::array cubic_rotations = {
+inline PSTACK_BIT_CAST_CONSTEXPR const std::array cubic_rotations = {
     geo::eye3<float>,
     geo::rot3<float>({ 1, 0, 0 }, 90),
     geo::rot3<float>({ 1, 0, 0 }, 180),

@@ -83,10 +83,21 @@ constexpr int ceil(const T value) {
     return value > i ? i + 1 : i;
 }
 
+#if defined(__cpp_lib_bit_cast) and __cpp_lib_bit_cast >= 201806L
+#define PSTACK_BIT_CAST(_type, _value) std::bit_cast<_type>(_value)
+#define PSTACK_BIT_CAST_CONSTEXPR constexpr
+#else
+#define PSTACK_BIT_CAST(_type, _value) \
+    [_v = _value]() mutable { \
+        return *reinterpret_cast<_type*>(&_v); \
+    }()
+#define PSTACK_BIT_CAST_CONSTEXPR
+#endif
+
 template <std::size_t iterations = 4>
-constexpr float inverse_sqrt(const float value) {
-    const std::uint32_t i = std::bit_cast<std::uint32_t>(value);
-    float d = std::bit_cast<float>(0x5F37642F - (i >> 1));
+PSTACK_BIT_CAST_CONSTEXPR float inverse_sqrt(const float value) {
+    const std::uint32_t i = PSTACK_BIT_CAST(std::uint32_t, value);
+    float d = PSTACK_BIT_CAST(float, 0x5F37642F - (i >> 1));
     for (int iter = 0; iter < iterations; ++iter) {
         d = 0.5 * d * (3 - value * d * d);
     }
@@ -94,9 +105,9 @@ constexpr float inverse_sqrt(const float value) {
 }
 
 template <std::size_t iterations = 4>
-constexpr double inverse_sqrt(const double value) {
-    const std::uint64_t i = std::bit_cast<std::uint64_t>(value);
-    double d = std::bit_cast<double>(0x5FE6EB50C7B537A9 - (i >> 1));
+PSTACK_BIT_CAST_CONSTEXPR double inverse_sqrt(const double value) {
+    const std::uint64_t i = PSTACK_BIT_CAST(std::uint64_t, value);
+    double d = PSTACK_BIT_CAST(double, 0x5FE6EB50C7B537A9 - (i >> 1));
     for (int iter = 0; iter < iterations; ++iter) {
         d = 0.5 * d * (3 - value * d * d);
     }
