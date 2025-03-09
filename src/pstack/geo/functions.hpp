@@ -76,7 +76,8 @@ constexpr double cos(double x) {
 }
 
 // Taken from https://stackoverflow.com/a/66146159
-template <std::floating_point T>
+template <class T>
+requires (std::is_floating_point_v<T>)
 constexpr int ceil(const T value) {
     const int i = static_cast<int>(value);
     return value > i ? i + 1 : i;
