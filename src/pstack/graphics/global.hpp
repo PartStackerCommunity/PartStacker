@@ -1,12 +1,12 @@
 #ifndef PSTACK_GRAPHICS_GLOBAL_HPP
 #define PSTACK_GRAPHICS_GLOBAL_HPP
 
-#include <expected>
 #include <string>
+#include "pstack/util/expected.hpp"
 
 namespace pstack::graphics {
 
-std::expected<void, std::string> initialize();
+util::expected<void, std::string> initialize();
 
 void viewport(int x, int y, int width, int height);
 

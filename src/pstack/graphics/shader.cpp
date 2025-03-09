@@ -8,7 +8,7 @@ namespace pstack::graphics {
 
 namespace {
 
-std::expected<GLuint, std::string> make_shader(const GLchar* const source, const GLenum type) {
+util::expected<GLuint, std::string> make_shader(const GLchar* const source, const GLenum type) {
     GLuint handle = glCreateShader(type);
     glShaderSource(handle, 1, &source, nullptr);
 
@@ -19,7 +19,7 @@ std::expected<GLuint, std::string> make_shader(const GLchar* const source, const
     glGetShaderiv(handle, GL_COMPILE_STATUS, &result);
     if (GL_FALSE == result) {
         glGetShaderInfoLog(handle, std::size(buffer), nullptr, buffer);
-        return std::unexpected(std::format("Error compiling shader of type {}: \"{}\"", type, buffer));
+        return util::unexpected(std::format("Error compiling shader of type {}: \"{}\"", type, buffer));
     }
 
     return handle;
@@ -31,7 +31,7 @@ void shader::use_program() {
     glUseProgram(_program);
 }
 
-std::expected<void, std::string> shader::initialize(const char* vertex_source, const char* fragment_source) {
+util::expected<void, std::string> shader::initialize(const char* vertex_source, const char* fragment_source) {
     static_assert(std::same_as<const GLchar*, std::remove_const_t<decltype(vertex_source)>>);
     static_assert(std::same_as<const GLchar*, std::remove_const_t<decltype(fragment_source)>>);
     
@@ -40,13 +40,13 @@ std::expected<void, std::string> shader::initialize(const char* vertex_source, c
 
     auto vertex_shader = make_shader(vertex_source, GL_VERTEX_SHADER);
     if (not vertex_shader.has_value()) {
-        return std::unexpected(std::move(vertex_shader).error());
+        return util::unexpected(std::move(vertex_shader).error());
     }
     glAttachShader(_program, *vertex_shader);
 
     auto fragment_shader = make_shader(fragment_source, GL_FRAGMENT_SHADER);
     if (not fragment_shader.has_value()) {
-        return std::unexpected(std::move(fragment_shader).error());
+        return util::unexpected(std::move(fragment_shader).error());
     }
     glAttachShader(_program, *fragment_shader);
 
@@ -57,14 +57,14 @@ std::expected<void, std::string> shader::initialize(const char* vertex_source, c
     glGetProgramiv(_program, GL_LINK_STATUS, &result);
     if (GL_FALSE == result) {
         glGetProgramInfoLog(_program, std::size(buffer), nullptr, buffer);
-        return std::unexpected(std::format("Error linking shader program: \"{}\"", buffer));
+        return util::unexpected(std::format("Error linking shader program: \"{}\"", buffer));
     }
 
 	glValidateProgram(_program);
 	glGetProgramiv(_program, GL_VALIDATE_STATUS, &result);
 	if (GL_FALSE == result) {
         glGetProgramInfoLog(_program, std::size(buffer), nullptr, buffer);
-        return std::unexpected(std::format("Invalid shader program: \"{}\"", buffer));
+        return util::unexpected(std::format("Invalid shader program: \"{}\"", buffer));
 	}
 
 	glDetachShader(_program, *vertex_shader);

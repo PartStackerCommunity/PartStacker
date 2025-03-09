@@ -3,10 +3,10 @@
 
 namespace pstack::graphics {
 
-std::expected<void, std::string> initialize() {
+util::expected<void, std::string> initialize() {
     const GLenum err = glewInit();
     if (GLEW_OK != err) {
-        return std::unexpected(reinterpret_cast<const char*>(glewGetErrorString(err)));
+        return util::unexpected(reinterpret_cast<const char*>(glewGetErrorString(err)));
     }
 
     glEnable(GL_CULL_FACE);   // Front faces are CCW by default, and back faces are the ones being culled by default
