@@ -4,7 +4,6 @@
 #include "pstack/calc/mesh.hpp"
 #include <wx/listctrl.h>
 #include <wx/string.h>
-#include <any>
 #include <utility>
 #include <vector>
 

@@ -2,7 +2,6 @@
 #include "pstack/calc/voxelize.hpp"
 #include "pstack/util/mdarray.hpp"
 #include <algorithm>
-#include <cfenv>
 #include <cmath>
 #include <span>
 #include <stack>
