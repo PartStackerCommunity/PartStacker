@@ -66,7 +66,9 @@ int voxelize(const mesh& mesh, const util::mdspan<int, 3> voxels, const int inde
             }
             visited[x, y, z] = true;
 
-            const bool good = [&] {
+            // Todo: Simplify the capture in Xcode 16
+            // P1091R3 and P1381R1, C++20 feature, no feature test macro
+            const bool good = [&, x = x, y = y, z = z] {
                 for (std::size_t i = 0; i < carver_size; ++i) {
                     for (std::size_t j = 0; j < carver_size; ++j) {
                         for (std::size_t k = 0; k < carver_size; ++k) {

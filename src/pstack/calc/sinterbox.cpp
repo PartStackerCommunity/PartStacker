@@ -58,10 +58,8 @@ std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> make_posi
     const geo::vector3 size = max - min;
 
     // Number of bars in the given direction
-    const geo::vector3 N = [&] {
-        auto n = (size + (2 * clearance) - desired_spacing) / (width + desired_spacing);
-        return geo::vector3<float>{ (float)(int)n.x, (float)(int)n.y, (float)(int)n.z }; // Round down
-    }();
+    const auto n = (size + (2 * clearance) - desired_spacing) / (width + desired_spacing);
+    const geo::vector3<float> N{ (float)(int)n.x, (float)(int)n.y, (float)(int)n.z }; // Round down
 
     const geo::vector3 _numerators = size + (2 * clearance) - (N * width);
     const geo::vector3<float> real_spacing = {
@@ -75,7 +73,7 @@ std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> make_posi
 
     // Todo: Simplify the capture in Xcode 16
     // P1091R3 and P1381R1, C++20 feature, no feature test macro
-    const auto make_vector = [&, thickness, width](auto elem) -> std::vector<float> {
+    const auto make_vector = [&, thickness = thickness, width = width](auto elem) -> std::vector<float> {
         std::vector<float> out;
         out.reserve(4 * (int)elem(N) * 2);
         out.push_back(elem(lower_bound) - thickness);
