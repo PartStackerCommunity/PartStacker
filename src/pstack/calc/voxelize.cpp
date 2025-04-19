@@ -202,7 +202,7 @@ int voxelize(const mesh& mesh, const util::mdspan<int, 3> voxels, const int inde
 
     // Calculate and return volume by counting the voxels
     const std::span<const int> all_voxels{ voxels.data_handle(), voxels.size() };
-    return std::ranges::count_if(all_voxels, [index](int i) {
+    return std::count_if(all_voxels.begin(), all_voxels.end(), [index](int i) {
         return (i & index) != 0;
     });
 }

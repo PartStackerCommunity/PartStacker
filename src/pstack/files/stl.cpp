@@ -1,9 +1,9 @@
 #include "pstack/files/read.hpp"
+#include "pstack/files/split.hpp"
 #include "pstack/files/stl.hpp"
 #include "pstack/geo/triangle.hpp"
 #include <array>
 #include <fstream>
-#include <ranges>
 #include <sstream>
 #include <string>
 
@@ -54,15 +54,11 @@ calc::mesh from_stl(const std::string& file_path) {
 
         for (std::size_t i = 1; i < lines.size() - 1; i += 7) {
             static constexpr auto parse_point = [](const std::string& line) {
-                auto vec_view = line
-                              | std::views::split(' ')
-                              | std::views::transform([](auto&& x) { return std::string(x.begin(), x.end()); });
-                const auto vec = std::vector<std::string>(vec_view.begin(), vec_view.end());
-                auto view = vec | std::views::reverse;
+                const auto vec = split(line, ' ');
                 return geo::point3<float>{
-                    std::stof(view[2]),
-                    std::stof(view[1]),
-                    std::stof(view[0]),
+                    std::stof(std::string(vec[vec.size() - 3])),
+                    std::stof(std::string(vec[vec.size() - 2])),
+                    std::stof(std::string(vec[vec.size() - 1])),
                 };
             };
             geo::vector3<float> normal = parse_point(lines[i]).as_vector();

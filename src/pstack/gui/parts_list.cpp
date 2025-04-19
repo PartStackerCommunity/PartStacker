@@ -5,7 +5,6 @@
 #include <charconv>
 #include <cmath>
 #include <filesystem>
-#include <ranges>
 
 namespace pstack::gui {
 
@@ -125,7 +124,8 @@ void parts_list::delete_all() {
 void parts_list::delete_selected() {
     static thread_local std::vector<std::size_t> indices_to_delete{};
     get_selected(indices_to_delete);
-    for (const std::size_t index : indices_to_delete | std::views::reverse) {
+    for (auto it = indices_to_delete.rbegin(); it != indices_to_delete.rend(); ++it) {
+        const std::size_t index = *it;
         _list.delete_row(index);
         _properties.erase(_properties.begin() + index);
         _selected.erase(_selected.begin() + index);

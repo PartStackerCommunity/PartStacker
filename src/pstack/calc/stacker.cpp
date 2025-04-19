@@ -6,7 +6,6 @@
 #include "pstack/util/mdarray.hpp"
 #include <algorithm>
 #include <optional>
-#include <ranges>
 
 namespace pstack::calc {
 
@@ -118,7 +117,9 @@ std::optional<mesh> stack_impl(const stacker_parameters& params, const std::atom
     stack_state state{};
     {
         auto parts = params.parts;
-        std::ranges::sort(parts, std::greater{}, &part_properties::volume);
+        std::sort(parts.begin(), parts.end(), [](const part_properties* lhs, const part_properties* rhs) {
+            return lhs->volume > rhs->volume;
+        });
         state.ordered_parts.reserve(parts.size());
         for (const part_properties* part : parts) {
             state.ordered_parts.push_back(*part);
@@ -140,9 +141,18 @@ std::optional<mesh> stack_impl(const stacker_parameters& params, const std::atom
         geo::matrix3 base_rotation = geo::eye3<float>;
 
         if (state.ordered_parts[i].rotate_min_box) {
-            auto reduced_view = state.ordered_parts[i].mesh.triangles()
-                              | std::views::filter([i = 0](auto&&) mutable { return i++ % 16 == 0; });
-            mesh reduced_mesh{ std::vector<geo::triangle>(reduced_view.begin(), reduced_view.end()) };
+            mesh reduced_mesh = [&state, i] {
+                auto triangles = state.ordered_parts[i].mesh.triangles();
+                std::size_t index = 0;
+                for (auto it = triangles.begin(); it != triangles.end(); ) {
+                    if (index++ % 16 == 0) {
+                        it = triangles.erase(it);
+                    } else {
+                        ++it;
+                    }
+                }
+                return mesh{ std::move(triangles) };
+            }();
 
             static constexpr std::size_t sections = 20;
             static constexpr double angle_diff = 2 * geo::pi / sections;

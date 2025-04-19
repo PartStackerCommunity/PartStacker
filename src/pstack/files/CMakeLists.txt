@@ -1,9 +1,11 @@
 add_library(pstack_files STATIC
     read.cpp
+    split.cpp
     stl.cpp
 )
 target_sources(pstack_files PUBLIC FILE_SET headers TYPE HEADERS FILES
     read.hpp
+    split.hpp
     stl.hpp
 )
 
