@@ -28,7 +28,8 @@ class mdarray {
 public:
     constexpr mdarray() = default;
 
-    template <std::convertible_to<std::size_t>... Extents>
+    template <class... Extents>
+    requires (... and std::is_convertible_v<Extents, std::size_t>)
     constexpr mdarray(Extents... extents)
         : _data((... * static_cast<std::size_t>(extents)), std::remove_const_t<T>{})
         , _span(_data.data(), static_cast<std::size_t>(extents)...)
@@ -76,7 +77,8 @@ public:
         return _span;
     }
 
-    template <std::convertible_to<std::size_t>... Indices>
+    template <class... Indices>
+    requires (... and std::is_convertible_v<Indices, std::size_t>)
     constexpr T& operator[](Indices... indices) {
 #if defined(MDSPAN_USE_BRACKET_OPERATOR) and MDSPAN_USE_BRACKET_OPERATOR == 0
         return _span(indices...);
@@ -85,7 +87,8 @@ public:
 #endif
     }
 
-    template <std::convertible_to<std::size_t>... Indices>
+    template <class... Indices>
+    requires (... and std::is_convertible_v<Indices, std::size_t>)
     constexpr const T& operator[](Indices... indices) const {
 #if defined(MDSPAN_USE_BRACKET_OPERATOR) and MDSPAN_USE_BRACKET_OPERATOR == 0
         return _span(indices...);
