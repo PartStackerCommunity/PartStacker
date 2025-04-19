@@ -30,7 +30,7 @@ part_properties make_properties(std::string mesh_file, bool mirrored) {
         if (number_length == 0 or not (name.size() > number_length and name[name.size() - number_length - 1] == looking_for)) {
             return 1; // Default is 1, if we can't parse a number
         }
-        std::string_view number{ name.data() + (name.size() - number_length), name.data() + name.size() };
+        std::string_view number{ name.data() + (name.size() - number_length), number_length };
         int out{-1};
         std::from_chars(number.data(), number.data() + number.size(), out);
         return out;
