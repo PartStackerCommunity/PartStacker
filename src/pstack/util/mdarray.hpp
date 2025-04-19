@@ -97,6 +97,13 @@ public:
 #endif
     }
 
+    constexpr T& operator[](const std::array<std::size_t, Rank>& indices) {
+        return _span[indices];
+    }
+    constexpr const T& operator[](const std::array<std::size_t, Rank>& indices) const {
+        return _span[indices];
+    }
+
     constexpr std::size_t extent(std::size_t dimension) {
         return _span.extent(dimension);
     }

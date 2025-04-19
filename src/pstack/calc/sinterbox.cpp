@@ -105,8 +105,8 @@ void append_sinterbox(std::vector<geo::triangle>& triangles, const sinterbox_par
         util::mdarray<geo::point3<float>, 2> upper_xy(positions_x.size(), positions_y.size());
         for (std::size_t x = 0; x < positions_x.size(); ++x) {
             for (std::size_t y = 0; y < positions_y.size(); ++y) {
-                lower_xy[x, y] = { positions_x[x], positions_y[y], lower_bound.z };
-                upper_xy[x, y] = { positions_x[x], positions_y[y], upper_bound.z };
+                lower_xy[{x, y}] = { positions_x[x], positions_y[y], lower_bound.z };
+                upper_xy[{x, y}] = { positions_x[x], positions_y[y], upper_bound.z };
             }
         }
         append_side(triangles, lower_xy, geo::unit_z<float>, geo::unit_x<float>, geo::unit_y<float>, params.thickness);
@@ -120,8 +120,8 @@ void append_sinterbox(std::vector<geo::triangle>& triangles, const sinterbox_par
         util::mdarray<geo::point3<float>, 2> upper_zx(positions_z.size(), positions_x.size());
         for (std::size_t z = 0; z < positions_z.size(); ++z) {
             for (std::size_t x = 0; x < positions_x.size(); ++x) {
-                lower_zx[z, x] = { positions_x[x], lower_bound.y, positions_z[z] };
-                upper_zx[z, x] = { positions_x[x], upper_bound.y, positions_z[z] };
+                lower_zx[{z, x}] = { positions_x[x], lower_bound.y, positions_z[z] };
+                upper_zx[{z, x}] = { positions_x[x], upper_bound.y, positions_z[z] };
             }
         }
         append_side(triangles, lower_zx, geo::unit_y<float>, geo::unit_z<float>, geo::unit_x<float>, params.thickness);
@@ -134,8 +134,8 @@ void append_sinterbox(std::vector<geo::triangle>& triangles, const sinterbox_par
         util::mdarray<geo::point3<float>, 2> upper_yz(positions_y.size(), positions_z.size());
         for (std::size_t y = 0; y < positions_y.size(); ++y) {
             for (std::size_t z = 0; z < positions_z.size(); ++z) {
-                lower_yz[y, z] = { lower_bound.x, positions_y[y], positions_z[z] };
-                upper_yz[y, z] = { upper_bound.x, positions_y[y], positions_z[z] };
+                lower_yz[{y, z}] = { lower_bound.x, positions_y[y], positions_z[z] };
+                upper_yz[{y, z}] = { upper_bound.x, positions_y[y], positions_z[z] };
             }
         }
         append_side(triangles, lower_yz, geo::unit_x<float>, geo::unit_y<float>, geo::unit_z<float>, params.thickness);

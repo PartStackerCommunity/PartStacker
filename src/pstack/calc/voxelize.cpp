@@ -33,7 +33,7 @@ int voxelize(const mesh& mesh, const util::mdspan<int, 3> voxels, const int inde
                 const auto x = static_cast<std::size_t>(pos.x + 0.5f);
                 const auto y = static_cast<std::size_t>(pos.y + 0.5f);
                 const auto z = static_cast<std::size_t>(pos.z + 0.5f);
-                actual_triangles[x, y, z] = true;
+                actual_triangles[{x, y, z}] = true;
             }
         }
     }
@@ -61,10 +61,10 @@ int voxelize(const mesh& mesh, const util::mdspan<int, 3> voxels, const int inde
             stack.pop();
 
             // Check if we need to do work here
-            if (x < 0 || y < 0 || z < 0 || x > voxels.extent(0) - carver_size || y > voxels.extent(1) - carver_size || z > voxels.extent(2) - carver_size || visited[x, y, z]) {
+            if (x < 0 || y < 0 || z < 0 || x > voxels.extent(0) - carver_size || y > voxels.extent(1) - carver_size || z > voxels.extent(2) - carver_size || visited[{(std::size_t)x, (std::size_t)y, (std::size_t)z}]) {
                 continue;
             }
-            visited[x, y, z] = true;
+            visited[{(std::size_t)x, (std::size_t)y, (std::size_t)z}] = true;
 
             // Todo: Simplify the capture in Xcode 16
             // P1091R3 and P1381R1, C++20 feature, no feature test macro
@@ -72,7 +72,7 @@ int voxelize(const mesh& mesh, const util::mdspan<int, 3> voxels, const int inde
                 for (std::size_t i = 0; i < carver_size; ++i) {
                     for (std::size_t j = 0; j < carver_size; ++j) {
                         for (std::size_t k = 0; k < carver_size; ++k) {
-                            if (actual_triangles[x + i, y + j, z + k]) {
+                            if (actual_triangles[{x + i, y + j, z + k}]) {
                                 return false;
                             }
                         }
@@ -87,7 +87,7 @@ int voxelize(const mesh& mesh, const util::mdspan<int, 3> voxels, const int inde
             for (std::size_t i = 0; i < carver_size; ++i) {
                 for (std::size_t j = 0; j < carver_size; ++j) {
                     for (std::size_t k = 0; k < carver_size; ++k) {
-                        carved[x + i, y + j, z + k] = true;
+                        carved[{x + i, y + j, z + k}] = true;
                     }
                 }
             }
@@ -122,14 +122,14 @@ int voxelize(const mesh& mesh, const util::mdspan<int, 3> voxels, const int inde
                 int maxV = std::numeric_limits<int>::min();
 
                 for (int z = 0; z < voxels.extent(2); ++z) {
-                    if (actual_triangles[x, y, z]) {
+                    if (actual_triangles[{(std::size_t)x, (std::size_t)y, (std::size_t)z}]) {
                         minV = std::min(z, minV);
                         maxV = std::max(z, maxV);
                     }
                 }
 
                 for (int z = minV; z < maxV; z++) {
-                    actual_triangles[x, y, z] = true;
+                    actual_triangles[{(std::size_t)x, (std::size_t)y, (std::size_t)z}] = true;
                 }
             }
         }
@@ -141,14 +141,14 @@ int voxelize(const mesh& mesh, const util::mdspan<int, 3> voxels, const int inde
                 int maxV = std::numeric_limits<int>::min();
 
                 for (int y = 0; y < voxels.extent(1); ++y) {
-                    if (actual_triangles[x, y, z]) {
+                    if (actual_triangles[{(std::size_t)x, (std::size_t)y, (std::size_t)z}]) {
                         minV = std::min(y, minV);
                         maxV = std::max(y, maxV);
                     }
                 }
 
                 for (int y = minV; y < maxV; y++) {
-                    actual_triangles[x, y, z] = true;
+                    actual_triangles[{(std::size_t)x, (std::size_t)y, (std::size_t)z}] = true;
                 }
             }
         }
@@ -160,14 +160,14 @@ int voxelize(const mesh& mesh, const util::mdspan<int, 3> voxels, const int inde
                 int maxV = std::numeric_limits<int>::min();
 
                 for (int x = 0; x < voxels.extent(0); ++x) {
-                    if (actual_triangles[x, y, z]) {
+                    if (actual_triangles[{(std::size_t)x, (std::size_t)y, (std::size_t)z}]) {
                         minV = std::min(x, minV);
                         maxV = std::max(x, maxV);
                     }
                 }
 
                 for (int x = minV; x < maxV; x++) {
-                    actual_triangles[x, y, z] = true;
+                    actual_triangles[{(std::size_t)x, (std::size_t)y, (std::size_t)z}] = true;
                 }
             }
         }
@@ -179,7 +179,7 @@ int voxelize(const mesh& mesh, const util::mdspan<int, 3> voxels, const int inde
     for (std::size_t x = 0; x < voxels.extent(0) - 1; ++x) {
         for (std::size_t y = 0; y < voxels.extent(1) - 1; ++y) {
             for (std::size_t z = 0; z < voxels.extent(2) - 1; ++z) {
-                if (not carved[x, y, z] and actual_triangles[x, y, z]) {
+                if (not carved[{x, y, z}] and actual_triangles[{x, y, z}]) {
 #if defined(MDSPAN_USE_BRACKET_OPERATOR) and MDSPAN_USE_BRACKET_OPERATOR == 0
                     voxels(x + 1, y + 1, z + 1) |= index;
                     voxels(x + 1, y + 1, z) |= index;
