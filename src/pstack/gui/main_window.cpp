@@ -141,7 +141,11 @@ void main_window::set_part(const std::size_t index) {
             _radio_cubic->SetValue(false);
             break;
         }
+#if defined(__cpp_lib_unreachable) and __cpp_lib_unreachable >= 202202L
         default: std::unreachable();
+#else
+        default: __builtin_unreachable();
+#endif
     }
     _viewport->set_mesh(_current_part->mesh, _current_part->centroid);
 }
