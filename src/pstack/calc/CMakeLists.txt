@@ -1,4 +1,5 @@
 add_library(pstack_calc STATIC
+    binpack.cpp
     mesh.cpp
     rotations.cpp
     sinterbox.cpp
@@ -6,6 +7,8 @@ add_library(pstack_calc STATIC
     voxelize.cpp
 )
 target_sources(pstack_calc PUBLIC FILE_SET headers TYPE HEADERS FILES
+    binpack.hpp
+    binpack_types.hpp
     bool.hpp
     mesh.hpp
     part.hpp
