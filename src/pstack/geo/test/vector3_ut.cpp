@@ -1,14 +1,14 @@
 #include "pstack/geo/vector3.hpp"
 #include "pstack/geo/test/generate.hpp"
-
-#include <catch2/catch_approx.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 
 namespace pstack::geo {
 namespace {
 
 constexpr test::generator<> g{};
+using Catch::Matchers::WithinRel;
 
 TEMPLATE_TEST_CASE("properties", "[vector3]",
                    int, long, double, float)
@@ -207,7 +207,7 @@ TEMPLATE_TEST_CASE("normalize()", "[vector3]",
     const auto expected = vec * inverse_sqrt(dot(vec, vec));
     const auto actual = normalize(vec);
     CHECK(actual == expected);
-    CHECK(dot(actual, actual) == Catch::Approx(1));
+    CHECK_THAT(dot(actual, actual), WithinRel(T{1}));
 }
 
 } // namespace

@@ -1,14 +1,16 @@
 #include "pstack/geo/functions.hpp"
 #include "pstack/geo/test/generate.hpp"
-
-#include <catch2/catch_approx.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 
 namespace pstack::geo {
 namespace {
 
-constexpr test::generator<> g{};
+constexpr test::generator<-10, 10> g{};
+using Catch::Matchers::WithinAbs;
+template <std::floating_point T>
+constexpr auto epsilon = std::numeric_limits<T>::epsilon() * (std::same_as<T, double> ? 400 : 20);
 
 TEST_CASE("pi", "[functions]") {
     STATIC_CHECK(pi == std::numbers::pi);
@@ -16,12 +18,12 @@ TEST_CASE("pi", "[functions]") {
 
 TEST_CASE("sin", "[functions]") {
     const auto num = g.generate<double>();
-    CHECK(sin(num) == Catch::Approx(std::sin(num)));
+    CHECK_THAT(sin(num), WithinAbs(std::sin(num), epsilon<double>));
 }
 
 TEST_CASE("cos", "[functions]") {
     const auto num = g.generate<double>();
-    CHECK(cos(num) == Catch::Approx(std::cos(num)));
+    CHECK_THAT(cos(num), WithinAbs(std::cos(num), epsilon<double>));
 }
 
 TEST_CASE("ceil fractional", "[functions]") {
@@ -43,7 +45,7 @@ TEMPLATE_TEST_CASE("inverse_sqrt", "[functions]",
 {
     using T = TestType;
     const auto num = std::abs(g.generate<T>());
-    CHECK(inverse_sqrt(num) == Catch::Approx(1 / std::sqrt(num)));
+    CHECK_THAT(inverse_sqrt(num), WithinAbs(1 / std::sqrt(num), epsilon<T>));
 }
 
 } // namespace
