@@ -11,6 +11,7 @@ struct vector3 {
     T x;
     T y;
     T z;
+    friend constexpr bool operator==(const vector3&, const vector3&) = default;
 };
 
 template <class T>
@@ -76,6 +77,11 @@ constexpr vector3<T> operator*(const vector3<T>& lhs, const std::type_identity_t
 template <class T>
 constexpr vector3<T> operator/(const vector3<T>& lhs, const std::type_identity_t<T>& rhs) {
     return { lhs.x / rhs, lhs.y / rhs, lhs.z / rhs };
+}
+
+template <class T>
+constexpr vector3<T> operator/(const std::type_identity_t<T>& lhs, const vector3<T>& rhs) {
+    return { lhs / rhs.x, lhs / rhs.y, lhs / rhs.z };
 }
 
 template <class T>
