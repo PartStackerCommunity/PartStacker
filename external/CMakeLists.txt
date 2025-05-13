@@ -22,6 +22,9 @@ if(WIN32)
     )
 endif()
 
+set(CATCH_CONFIG_STATIC ON)
+add_subdirectory(Catch2)
+
 # Functions from https://stackoverflow.com/a/62311397
 function(get_all_targets var dir)
     set(targets)
