@@ -48,6 +48,13 @@
             "targets": "pstack_gui",
             "configurePreset": "Debug",
             "configuration": "Debug"
+        },
+        {
+            "name": "Tests",
+            "displayName": "PartStacker Tests",
+            "targets": "pstack_geo_test",
+            "configurePreset": "Debug",
+            "configuration": "Debug"
         }
     ]
 }

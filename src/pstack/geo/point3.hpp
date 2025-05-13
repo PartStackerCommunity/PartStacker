@@ -11,6 +11,7 @@ struct point3 {
     T x;
     T y;
     T z;
+    friend constexpr bool operator==(const point3&, const point3&) = default;
 
     constexpr vector3<T> as_vector() const {
         return { x, y, z };
@@ -47,13 +48,8 @@ constexpr point3<T> operator+(const point3<T>& lhs, const std::type_identity_t<T
 }
 
 template <class T>
-constexpr point3<T> operator+(const std::type_identity_t<T>& lhs, const vector3<T>& rhs) {
+constexpr point3<T> operator+(const std::type_identity_t<T>& lhs, const point3<T>& rhs) {
     return { lhs + rhs.x, lhs + rhs.y, lhs + rhs.z };
-}
-
-template <class T>
-constexpr point3<T> operator+(const point3<T> lhs, const point3<T> rhs) {
-    return { lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z };
 }
 
 template <class T>
@@ -62,7 +58,7 @@ constexpr point3<T> operator-(const point3<T>& lhs, const std::type_identity_t<T
 }
 
 template <class T>
-constexpr point3<T> operator-(const std::type_identity_t<T>& lhs, const vector3<T>& rhs) {
+constexpr point3<T> operator-(const std::type_identity_t<T>& lhs, const point3<T>& rhs) {
     return { lhs - rhs.x, lhs - rhs.y, lhs - rhs.z };
 }
 
