@@ -12,3 +12,5 @@ set_target_properties(pstack_geo PROPERTIES
     PROJECT_LABEL "geo"
 )
 target_include_directories(pstack_geo INTERFACE "${PROJECT_SOURCE_DIR}/src")
+
+add_subdirectory(test)
