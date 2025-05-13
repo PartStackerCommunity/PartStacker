@@ -1,39 +1,14 @@
 #include "pstack/geo/vector3.hpp"
+#include "pstack/geo/test/generate.hpp"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/generators/catch_generators_adapters.hpp>
-#include <catch2/generators/catch_generators_random.hpp>
 
 namespace pstack::geo {
 namespace {
 
-template <class T>
-std::pair<vector3<T>, vector3<T>> generate_vector_pair() {
-    const auto gen = GENERATE(take(10, chunk(6, random(T{-1000}, T{1000}))));
-    return {
-        vector3<T>{ gen[0], gen[1], gen[2] },
-        vector3<T>{ gen[3], gen[4], gen[5] }
-    };
-}
-
-template <class T>
-vector3<T> generate_vector() {
-    const auto gen = GENERATE(take(10, chunk(3, random(T{-1000}, T{1000}))));
-    return vector3<T>{ gen[0], gen[1], gen[2] };
-}
-
-template <class T>
-std::pair<vector3<T>, T> generate_vector_scalar() {
-    // Guard against div by zero
-    static constexpr auto nonzero = [](T t) { return t != T{0}; };
-    const auto gen = GENERATE(take(10, chunk(4, filter(nonzero, random(T{-1000}, T{1000})))));
-    return {
-        vector3<T>{ gen[0], gen[1], gen[2] },
-        gen[3]
-    };
-}
+constexpr test::generator<> g{};
 
 TEMPLATE_TEST_CASE("properties", "[vector3]",
                    int, long, double, float)
@@ -47,7 +22,7 @@ TEMPLATE_TEST_CASE("operator==()", "[vector3]",
                    int, long, double, float)
 {
     using T = TestType;
-    const auto [lhs, rhs] = generate_vector_pair<T>();
+    const auto [lhs, rhs] = g.generate<vector3<T>, vector3<T>>();
     CHECK(lhs == lhs);
     CHECK(rhs == rhs);
     CHECK(lhs != rhs);
@@ -88,7 +63,7 @@ TEMPLATE_TEST_CASE("two-vector operator+()", "[vector3]",
                    int, long, double, float)
 {
     using T = TestType;
-    const auto [lhs, rhs] = generate_vector_pair<T>();
+    const auto [lhs, rhs] = g.generate<vector3<T>, vector3<T>>();
     const vector3<T> expected{
         lhs.x + rhs.x,
         lhs.y + rhs.y,
@@ -101,7 +76,7 @@ TEMPLATE_TEST_CASE("two-vector operator-()", "[vector3]",
                    int, long, double, float)
 {
     using T = TestType;
-    const auto [lhs, rhs] = generate_vector_pair<T>();
+    const auto [lhs, rhs] = g.generate<vector3<T>, vector3<T>>();
     const vector3<T> expected{
         lhs.x - rhs.x,
         lhs.y - rhs.y,
@@ -114,7 +89,7 @@ TEMPLATE_TEST_CASE("unary operator-()", "[vector3]",
                    int, long, double, float)
 {
     using T = TestType;
-    const auto vec = generate_vector<T>();
+    const auto vec = g.generate<vector3<T>>();
     const vector3<T> expected{
         -vec.x,
         -vec.y,
@@ -127,7 +102,7 @@ TEMPLATE_TEST_CASE("operator+=()", "[vector3]",
                    int, long, double, float)
 {
     using T = TestType;
-    auto [lhs, rhs] = generate_vector_pair<T>();
+    auto [lhs, rhs] = g.generate<vector3<T>, vector3<T>>();
     const vector3<T> expected = lhs + rhs;
     lhs += rhs;
     CHECK(lhs == expected);
@@ -137,7 +112,7 @@ TEMPLATE_TEST_CASE("vector-scalar operator+()", "[vector3]",
                    int, long, double, float)
 {
     using T = TestType;
-    const auto [lhs, rhs] = generate_vector_scalar<T>();
+    const auto [lhs, rhs] = g.generate<vector3<T>, T>();
     const vector3<T> expected{
         lhs.x + rhs,
         lhs.y + rhs,
@@ -151,7 +126,7 @@ TEMPLATE_TEST_CASE("vector-scalar operator-()", "[vector3]",
                    int, long, double, float)
 {
     using T = TestType;
-    const auto [lhs, rhs] = generate_vector_scalar<T>();
+    const auto [lhs, rhs] = g.generate<vector3<T>, T>();
     const vector3<T> expected1{
         lhs.x - rhs,
         lhs.y - rhs,
@@ -170,7 +145,7 @@ TEMPLATE_TEST_CASE("vector-scalar operator*()", "[vector3]",
                    int, long, double, float)
 {
     using T = TestType;
-    const auto [lhs, rhs] = generate_vector_scalar<T>();
+    const auto [lhs, rhs] = g.generate<vector3<T>, T>();
     const vector3<T> expected{
         lhs.x * rhs,
         lhs.y * rhs,
@@ -184,7 +159,7 @@ TEMPLATE_TEST_CASE("vector-scalar operator/()", "[vector3]",
                    int, long, double, float)
 {
     using T = TestType;
-    const auto [lhs, rhs] = generate_vector_scalar<T>();
+    const auto [lhs, rhs] = g.generate<vector3<T>, T>(test::nonzero_filter);
     const vector3<T> expected1{
         lhs.x / rhs,
         lhs.y / rhs,
@@ -203,7 +178,7 @@ TEMPLATE_TEST_CASE("dot()", "[vector3]",
                    int, long, double, float)
 {
     using T = TestType;
-    const auto [lhs, rhs] = generate_vector_pair<T>();
+    const auto [lhs, rhs] = g.generate<vector3<T>, vector3<T>>();
     const T expected =
         (lhs.x * rhs.x) +
         (lhs.y * rhs.y) +
@@ -215,7 +190,7 @@ TEMPLATE_TEST_CASE("cross()", "[vector3]",
                    int, long, double, float)
 {
     using T = TestType;
-    const auto [lhs, rhs] = generate_vector_pair<T>();
+    const auto [lhs, rhs] = g.generate<vector3<T>, vector3<T>>();
     const vector3<T> expected{
         (lhs.y * rhs.z) - (lhs.z * rhs.y),
         (lhs.z * rhs.x) - (lhs.x * rhs.z),
@@ -228,7 +203,7 @@ TEMPLATE_TEST_CASE("normalize()", "[vector3]",
                    double, float)
 {
     using T = TestType;
-    const auto vec = generate_vector<T>();
+    const auto vec = g.generate<vector3<T>>();
     const auto expected = vec * inverse_sqrt(dot(vec, vec));
     const auto actual = normalize(vec);
     CHECK(actual == expected);
