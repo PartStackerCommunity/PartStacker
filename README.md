@@ -6,7 +6,7 @@ A community rewrite of Tom van der Zanden's beloved [PartStacker](https://github
 
 ## Download the latest release
 
-[**Click here**](https://github.com/PartStackerCommunity/PartStacker/releases/tag/v0.2) for the latest release.
+[**Click here**](https://github.com/PartStackerCommunity/PartStacker/releases/latest) for the latest release.
 
 ## Build this project
 
