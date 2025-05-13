@@ -11,6 +11,7 @@ struct matrix3 {
     T xx, xy, xz;
     T yx, yy, yz;
     T zx, zy, zz;
+    friend constexpr bool operator==(const matrix3&, const matrix3&) = default;
 };
 
 template <class T>
