@@ -1,0 +1,40 @@
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  test-windows:
+    runs-on: windows-2025
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+  
+      - uses: ./.github/actions/common-windows
+        with:
+          config-preset: Debug
+          build-preset: Tests
+
+      - name: Run Tests
+        run: |
+          cd ./build/
+          ctest
+
+  test-macos:
+    runs-on: macos-15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+  
+      - uses: ./.github/actions/common-macos
+        with:
+          config-preset: Debug
+          build-preset: Tests
+
+      - name: Run Tests
+        run: |
+          cd ./build/
+          ctest

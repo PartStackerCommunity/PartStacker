@@ -1,0 +1,27 @@
+name: macos
+
+inputs:
+  config-preset:
+    required: true
+  build-preset:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Select Xcode version
+      run: sudo xcode-select -switch /Applications/Xcode_16.3.app
+      shell: bash
+
+    - name: Configure PartStacker
+      run: |
+        cmake --preset ${{ inputs.config-preset }} \
+              -G Xcode \
+              -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+              -DCMAKE_OSX_DEPLOYMENT_TARGET=11.6
+      shell: bash
+
+    - name: Build PartStacker
+      run: |
+        cmake --build --preset ${{ inputs.build-preset }} -j8
+      shell: bash
