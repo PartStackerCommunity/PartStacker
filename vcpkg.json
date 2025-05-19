@@ -1,0 +1,10 @@
+{
+  "name": "partstacker",
+  "version-string": "0.3.0",
+  "dependencies": [
+    "catch2",
+    "glew",
+    "mdspan",
+    "wxwidgets"
+  ]
+}

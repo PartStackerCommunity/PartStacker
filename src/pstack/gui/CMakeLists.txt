@@ -34,10 +34,6 @@ target_link_libraries(pstack_gui PRIVATE
 )
 target_include_directories(pstack_gui PRIVATE "${PROJECT_SOURCE_DIR}/src")
 
-if(WIN32)
-    add_dependencies(pstack_gui pstack_gui_copy_wx_headers)
-endif()
-
 set(PSTACK_OUTPUT_TYPE "GUI")
 set(PSTACK_OUTPUT_FILE_NAME "PartStackerGUI")
 pstack_configure_target_info(pstack_gui)

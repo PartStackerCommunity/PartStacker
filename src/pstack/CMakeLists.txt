@@ -6,10 +6,13 @@ macro(pstack_add_test_executable target)
         "${target}"
         Catch2::Catch2WithMain
     )
+    get_target_property(component_name "${target}" PROJECT_LABEL)
     set_target_properties("${target}_test" PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/test"
+        FOLDER "test"
+        PROJECT_LABEL "${component_name}"
     )
-    include("${PROJECT_SOURCE_DIR}/external/Catch2/extras/Catch.cmake")
+    include("${Catch2_DIR}/Catch.cmake")
     catch_discover_tests("${target}_test")
 endmacro()
 

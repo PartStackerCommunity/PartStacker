@@ -7,7 +7,7 @@
 #if defined(__cpp_lib_mdspan) and __cpp_lib_mdspan >= 202207L
 #include <mdspan>
 #else
-#include "mdspan/mdspan.hpp"
+#include <experimental/mdspan>
 #endif
 
 namespace pstack::util {
@@ -18,8 +18,8 @@ using mdspan = std::mdspan<T, std::dextents<std::size_t, Rank>>;
 using std::extents;
 #else
 template <class T, std::size_t Rank>
-using mdspan = MDSPAN_IMPL_STANDARD_NAMESPACE::mdspan<T, MDSPAN_IMPL_STANDARD_NAMESPACE::dextents<std::size_t, Rank>>;
-using MDSPAN_IMPL_STANDARD_NAMESPACE::extents;
+using mdspan = std::experimental::mdspan<T, std::experimental::dextents<std::size_t, Rank>>;
+using std::experimental::extents;
 #endif
 
 template <class T, std::size_t Rank>
