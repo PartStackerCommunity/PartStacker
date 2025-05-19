@@ -9,7 +9,7 @@ macro(pstack_add_test_executable target)
     set_target_properties("${target}_test" PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/test"
     )
-    include("${PROJECT_SOURCE_DIR}/external/Catch2/extras/Catch.cmake")
+    include("${Catch2_DIR}/Catch.cmake")
     catch_discover_tests("${target}_test")
 endmacro()
 
