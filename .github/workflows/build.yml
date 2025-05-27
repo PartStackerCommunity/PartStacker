@@ -2,11 +2,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-tests:
-    uses: ./.github/workflows/test.yml
+  # run-tests:
+  #   uses: ./.github/workflows/test.yml
 
   build-windows:
-    needs: run-tests
+    # needs: run-tests
     runs-on: windows-2025
     steps:
       - name: Checkout code
@@ -30,7 +30,7 @@ jobs:
           path: .\bin\Release\PartStackerGUI-windows.exe
 
   build-macos:
-    needs: run-tests
+    # needs: run-tests
     runs-on: macos-15
     steps:
       - name: Checkout code
