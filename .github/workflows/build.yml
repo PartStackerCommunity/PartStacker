@@ -29,17 +29,31 @@ jobs:
       - run: |
           cd external/vcpkg
           ls
+          echo ""
+          echo ""
           cd buildtrees
           ls
+          echo ""
+          echo ""
           cd wxwidgets
           ls
+          echo ""
+          echo ""
           cd src
           ls
+          echo ""
+          echo ""
           cd v3.2.7-90467b189b.clean
           ls
+          echo ""
+          echo ""
           cd include
           ls
+          echo ""
+          echo ""
           cd wx
           ls
+          echo ""
+          echo ""
           cd osx
           ls
