@@ -2,36 +2,16 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-tests:
-    uses: ./.github/workflows/test.yml
-
-  build-windows:
-    needs: run-tests
-    runs-on: windows-2025
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Configure and build
-        uses: ./.github/actions/common-windows
-        with:
-          config-preset: Release
-          build-preset: Release
-
-      - name: Copy exe
-        run: copy ".\bin\Release\PartStackerGUI.exe" ".\bin\Release\PartStackerGUI-windows.exe"
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: PartStackerGUI-windows
-          path: .\bin\Release\PartStackerGUI-windows.exe
 
   build-macos:
-    needs: run-tests
     runs-on: macos-15
+    strategy:
+      matrix:
+        include:
+          - triplet: x64-osx
+            arch: x86_64
+          - triplet: arm64-osx
+            arch: arm64
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -43,35 +23,5 @@ jobs:
         with:
           config-preset: Release
           build-preset: Release
-          vcpkg-triplet: x64-osx
-          arch: x86_64
-
-      - name: Configure and build arm64
-        uses: ./.github/actions/common-macos
-        with:
-          config-preset: Release
-          build-preset: Release
-          vcpkg-triplet: arm64-osx
-          arch: arm64
-
-      - name: Merge binaries
-        run: |
-          cp -R ./bin/x86_x64/Release/PartStackerGUI.app ./bin/universal/Release/PartStackerGUI.app
-          lipo -create \
-            ./bin/x86_x64/Release/PartStackerGUI.app/Contents/MacOS/PartStackerGUI \
-            ./bin/arm64/Release/PartStackerGUI.app/Contents/MacOS/PartStackerGUI \
-            -output ./bin/universal/Release/PartStackerGUI.app/Contents/MacOS/PartStackerGUI
-
-      - name: Package into DMG
-        run: |
-          hdiutil create \
-            -volname "PartStackerGUI" \
-            -srcfolder ./bin/universal/Release \
-            -format UDZO \
-            ./bin/Release/PartStackerGUI-mac.dmg
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: PartStackerGUI-mac
-          path: ./bin/Release/PartStackerGUI-mac.dmg
+          vcpkg-triplet: ${{ matrix.triplet }}
+          arch: ${{ matrix.arch }}
