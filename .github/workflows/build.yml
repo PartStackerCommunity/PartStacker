@@ -25,3 +25,35 @@ jobs:
           build-preset: Release
           vcpkg-triplet: ${{ matrix.triplet }}
           arch: ${{ matrix.arch }}
+
+      - run: |
+          cd external/vcpkg
+          ls
+
+      - run: |
+          cd buildtrees
+          ls
+
+      - run: |
+          cd wxwidgets
+          ls
+
+      - run: |
+          cd src
+          ls
+
+      - run: |
+          cd v3.2.7-90467b189b.clean
+          ls
+
+      - run: |
+          cd include
+          ls
+
+      - run: |
+          cd wx
+          ls
+
+      - run: |
+          cd osx
+          ls
