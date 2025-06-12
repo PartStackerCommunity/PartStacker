@@ -15,7 +15,7 @@ runs:
         path: |
           build/
           external/vcpkg/
-        key: windows-build-${{ hashFiles('/**/CMakeLists.txt', '/**/*.cmake', '/vcpkg.json', '!/external/**') }}
+        key: windows-build-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake', 'vcpkg.json', '!external/**') }}
 
     - name: Configure PartStacker
       run: |
