@@ -8,8 +8,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - triplet: x64-osx
-            arch: x86_64
+          # - triplet: x64-osx
+          #   arch: x86_64
           - triplet: arm64-osx
             arch: arm64
     steps:
