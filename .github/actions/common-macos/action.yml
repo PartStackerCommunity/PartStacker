@@ -13,6 +13,14 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Cache build directory
+      uses: actions/cache@v4
+      with:
+        path: |
+          build/
+          external/vcpkg/
+        key: macos-build-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake', 'vcpkg.json', '!external/**') }}
+
     - name: Select Xcode version
       run: sudo xcode-select -switch /Applications/Xcode_16.3.app
       shell: bash
