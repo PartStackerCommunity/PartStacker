@@ -34,7 +34,7 @@ runs:
               -DCMAKE_OSX_DEPLOYMENT_TARGET=11.6
       shell: bash
 
-    - name: Build PartStacker
-      run: |
-        cmake --build --preset ${{ inputs.build-preset }} -j8
-      shell: bash
+    # - name: Build PartStacker
+    #   run: |
+    #     cmake --build --preset ${{ inputs.build-preset }} -j8
+    #   shell: bash
