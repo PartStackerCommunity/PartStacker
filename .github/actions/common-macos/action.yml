@@ -5,6 +5,10 @@ inputs:
     required: true
   build-preset:
     required: true
+  vcpkg-triplet:
+    required: true
+  arch:
+    required: true
 
 runs:
   using: "composite"
@@ -17,7 +21,8 @@ runs:
       run: |
         cmake --preset ${{ inputs.config-preset }} \
               -G Xcode \
-              -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+              -DVCPKG_TARGET_TRIPLET=${{ inputs.vcpkg-triplet }} \
+              -DCMAKE_OSX_ARCHITECTURES=${{ inputs.arch }} \
               -DCMAKE_OSX_DEPLOYMENT_TARGET=11.6
       shell: bash
 

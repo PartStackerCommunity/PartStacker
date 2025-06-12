@@ -10,8 +10,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-  
-      - uses: ./.github/actions/common-windows
+
+      - name: Configure and build
+        uses: ./.github/actions/common-windows
         with:
           config-preset: Debug
           build-preset: Tests
@@ -28,11 +29,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-  
-      - uses: ./.github/actions/common-macos
+
+      - name: Configure and build
+        uses: ./.github/actions/common-macos
         with:
           config-preset: Debug
           build-preset: Tests
+          vcpkg-triplet: arm64-osx
+          arch: arm64
 
       - name: Run Tests
         run: |
