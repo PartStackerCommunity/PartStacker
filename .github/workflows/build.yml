@@ -39,8 +39,8 @@ jobs:
           cd include
           echo "###### include"
           ls
-          cd wx
-          echo "###### wx"
+          cd wx-3.2
+          echo "###### wx-3.2"
           ls
           cd osx
           echo "###### osx"
