@@ -18,10 +18,28 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Configure and build x64
-        uses: ./.github/actions/common-macos
+      - name: Cache build directory
+        uses: actions/cache@v4
         with:
-          config-preset: Release
-          build-preset: Release
-          vcpkg-triplet: ${{ matrix.triplet }}
-          arch: ${{ matrix.arch }}
+          path: |
+            build/
+            external/vcpkg/
+          key: macos-vcpkg-repro
+
+      - name: Select Xcode version
+        run: sudo xcode-select -switch /Applications/Xcode_16.3.app
+        shell: bash
+
+      - name: Configure PartStacker
+        run: |
+          cmake --preset Debug \
+                -G Xcode \
+                -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }} \
+                -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+                -DCMAKE_OSX_DEPLOYMENT_TARGET=11.6
+        shell: bash
+
+      - name: Build PartStacker
+        run: |
+          cmake --build build --target minimal-vcpkg-repro
+        shell: bash
