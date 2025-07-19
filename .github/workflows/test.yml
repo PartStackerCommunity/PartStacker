@@ -45,6 +45,8 @@ jobs:
         with:
           config-preset: Debug
           build-preset: Tests
+          vcpkg-triplet: arm64-osx
+          arch: arm64
 
       - name: Run Tests
         run: |
