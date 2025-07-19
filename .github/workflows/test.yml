@@ -10,8 +10,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-  
-      - uses: ./.github/actions/common-windows
+
+      - name: Caching
+        uses: ./.github/actions/caching
+        with:
+          key-prefix: windows-build
+
+      - name: Configure and build
+        uses: ./.github/actions/common-windows
         with:
           config-preset: Debug
           build-preset: Tests
@@ -28,8 +34,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-  
-      - uses: ./.github/actions/common-macos
+
+      - name: Caching
+        uses: ./.github/actions/caching
+        with:
+          key-prefix: macos-build
+
+      - name: Configure and build
+        uses: ./.github/actions/common-macos
         with:
           config-preset: Debug
           build-preset: Tests
