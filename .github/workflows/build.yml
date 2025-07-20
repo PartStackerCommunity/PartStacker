@@ -13,8 +13,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-  
-      - uses: ./.github/actions/common-windows
+
+      - name: Caching
+        uses: ./.github/actions/caching
+        with:
+          key-prefix: windows-build
+
+      - name: Configure and build
+        uses: ./.github/actions/common-windows
         with:
           config-preset: Release
           build-preset: Release
@@ -36,19 +42,43 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-  
-      - uses: ./.github/actions/common-macos
+
+      - name: Caching
+        uses: ./.github/actions/caching
+        with:
+          key-prefix: macos-build
+
+      - name: Configure and build x64
+        uses: ./.github/actions/common-macos
         with:
           config-preset: Release
           build-preset: Release
+          vcpkg-triplet: x64-osx
+          arch: x86_64
+
+      - name: Configure and build arm64
+        uses: ./.github/actions/common-macos
+        with:
+          config-preset: Release
+          build-preset: Release
+          vcpkg-triplet: arm64-osx
+          arch: arm64
+
+      - name: Merge binaries
+        run: |
+          mkdir -p ./bin/Release
+          cp -R ./bin/x86_64/Release/PartStackerGUI.app ./bin/Release/PartStackerGUI.app
+          lipo -create \
+            ./bin/x86_64/Release/PartStackerGUI.app/Contents/MacOS/PartStackerGUI \
+            ./bin/arm64/Release/PartStackerGUI.app/Contents/MacOS/PartStackerGUI \
+            -output ./bin/Release/PartStackerGUI.app/Contents/MacOS/PartStackerGUI
 
       - name: Package into DMG
         run: |
-          mkdir -p ./bin/Release/dmg-root
-          mv ./bin/Release/PartStackerGUI.app ./bin/Release/dmg-root/
+          mkdir -p ./bin/Release
           hdiutil create \
             -volname "PartStackerGUI" \
-            -srcfolder ./bin/Release/dmg-root \
+            -srcfolder ./bin/Release \
             -format UDZO \
             ./bin/Release/PartStackerGUI-mac.dmg
 

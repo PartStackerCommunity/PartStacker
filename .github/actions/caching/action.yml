@@ -1,0 +1,16 @@
+name: caching
+
+inputs:
+  key-prefix:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache build directory
+      uses: actions/cache@v4
+      with:
+        path: |
+          build
+          external/vcpkg
+        key: ${{ inputs.key-prefix }}-2025-07-18
