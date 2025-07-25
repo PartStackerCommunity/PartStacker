@@ -328,7 +328,7 @@ wxMenuBar* main_window::make_menu_bar() {
 
     auto preferences_menu = new wxMenu();
     preferences_menu->AppendCheckItem((int)menu_item::pref_scroll, "Invert &scroll", "Change the viewport scroll direction");
-    preferences_menu->AppendCheckItem((int)menu_item::pref_extra, "Display &extra parts", "Display the extra part quantity separately");
+    preferences_menu->AppendCheckItem((int)menu_item::pref_extra, "Display &extra parts", "Display the quantity of extra parts separately");
     menu_bar->Append(preferences_menu, "&Preferences");
 
     auto help_menu = new wxMenu();

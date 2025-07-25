@@ -48,13 +48,21 @@ calc::part make_part(std::string mesh_file, bool mirrored) {
 }
 
 wxString quantity_string(const calc::part& part, const bool show_extra) {
-    if (show_extra and part.base_quantity.has_value()) {
-        const int diff = part.quantity - *part.base_quantity;
-        if (diff > 0) {
-            return wxString::Format("%d + %d", *part.base_quantity, diff);
-        }
+    if (not part.base_quantity.has_value()) {
+        return wxString::Format("%d", part.quantity);
     }
-    return wxString::Format("%d", part.quantity);
+
+    static const wxString up_arrow = wxString::FromUTF8(" \xe2\x86\x91"); // ↑
+    static const wxString down_arrow = wxString::FromUTF8(" \xe2\x86\x93"); // ↓
+    static const wxString empty = "";
+
+    const int diff = part.quantity - *part.base_quantity;
+    if (diff > 0 and show_extra) {
+        return wxString::Format("%d + %d%s", *part.base_quantity, diff, up_arrow);
+    } else {
+        auto& arrow_suffix = (diff > 0) ? up_arrow : (diff < 0) ? down_arrow : empty;
+        return wxString::Format("%d%s", part.quantity, arrow_suffix);
+    }
 }
 
 } // namespace
