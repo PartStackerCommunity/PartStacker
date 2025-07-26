@@ -58,19 +58,18 @@ void main_window::on_select_parts(const std::vector<std::size_t>& indices) {
 
 void main_window::set_part(const std::size_t index) {
     enable_part_settings(true);
-    _current_part = _parts_list.at(index);
-    _current_part_index.emplace(index);
-    _controls.quantity_spinner->SetValue(_current_part->quantity);
-    _controls.min_hole_spinner->SetValue(_current_part->min_hole);
-    _controls.minimize_checkbox->SetValue(_current_part->rotate_min_box);
-    _controls.rotation_dropdown->SetSelection(_current_part->rotation_index);
-    _viewport->set_mesh(_current_part->mesh, _current_part->centroid);
+    _current_parts.clear();
+    _current_parts.emplace_back(_parts_list.at(index).get(), index);
+    _controls.quantity_spinner->SetValue(_current_parts[0].part->quantity);
+    _controls.min_hole_spinner->SetValue(_current_parts[0].part->min_hole);
+    _controls.minimize_checkbox->SetValue(_current_parts[0].part->rotate_min_box);
+    _controls.rotation_dropdown->SetSelection(_current_parts[0].part->rotation_index);
+    _viewport->set_mesh(_current_parts[0].part->mesh, _current_parts[0].part->centroid);
 }
 
 void main_window::unset_part() {
     enable_part_settings(false);
-    _current_part.reset();
-    _current_part_index.reset();
+    _current_parts.clear();
 }
 
 void main_window::enable_part_settings(bool enable) {
@@ -206,7 +205,7 @@ void main_window::on_stacking_success(calc::stack_result result, const std::chro
 
 void main_window::enable_on_stacking(const bool starting) {
     const bool enable = not starting;
-    enable_part_settings(enable and _current_part_index.has_value());
+    enable_part_settings(enable and not _current_parts.empty());
     _parts_list.control()->Enable(enable);
     for (wxMenuItem* item : _disableable_menu_items) {
         item->Enable(enable);
@@ -353,16 +352,16 @@ void main_window::bind_all_controls() {
     _controls.delete_part_button->Bind(wxEVT_BUTTON, &main_window::on_delete_part, this);
     _controls.reload_part_button->Bind(wxEVT_BUTTON, &main_window::on_reload_part, this);
     _controls.copy_part_button->Bind(wxEVT_BUTTON, [this](wxCommandEvent& event) {
-        _parts_list.append(*_current_part);
+        _parts_list.append(*_current_parts[0].part);
         _parts_list.update_label();
         event.Skip();
     });
     _controls.mirror_part_button->Bind(wxEVT_BUTTON, [this](wxCommandEvent& event) {
-        _current_part->mirrored = not _current_part->mirrored;
-        _current_part->mesh.mirror_x();
-        _current_part->mesh.set_baseline({ 0, 0, 0 });
-        _parts_list.reload_text(_current_part_index.value());
-        set_part(_current_part_index.value());
+        _current_parts[0].part->mirrored = not _current_parts[0].part->mirrored;
+        _current_parts[0].part->mesh.mirror_x();
+        _current_parts[0].part->mesh.set_baseline({ 0, 0, 0 });
+        _parts_list.reload_text(_current_parts[0].index);
+        set_part(_current_parts[0].index);
         event.Skip();
     });
 
@@ -372,21 +371,21 @@ void main_window::bind_all_controls() {
     _controls.sinterbox_result_button->Bind(wxEVT_BUTTON, &main_window::on_sinterbox_result, this);
 
     _controls.quantity_spinner->Bind(wxEVT_SPINCTRL, [this](wxSpinEvent& event) {
-        _current_part->quantity = event.GetPosition();
-        _parts_list.reload_quantity(_current_part_index.value());
+        _current_parts[0].part->quantity = event.GetPosition();
+        _parts_list.reload_quantity(_current_parts[0].index);
         event.Skip();
     });
     _controls.min_hole_spinner->Bind(wxEVT_SPINCTRL, [this](wxSpinEvent& event) {
-        _current_part->min_hole = event.GetPosition();
+        _current_parts[0].part->min_hole = event.GetPosition();
         event.Skip();
     });
     _controls.minimize_checkbox->Bind(wxEVT_CHECKBOX, [this](wxCommandEvent& event) {
-        _current_part->rotate_min_box = event.IsChecked();
+        _current_parts[0].part->rotate_min_box = event.IsChecked();
         event.Skip();
     });
 
     _controls.rotation_dropdown->Bind(wxEVT_CHOICE, [this](wxCommandEvent& event) {
-        _current_part->rotation_index = _controls.rotation_dropdown->GetSelection();
+        _current_parts[0].part->rotation_index = _controls.rotation_dropdown->GetSelection();
         event.Skip();
     });
 

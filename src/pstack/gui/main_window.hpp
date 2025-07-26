@@ -33,8 +33,11 @@ private:
     void set_part(std::size_t index);
     void unset_part();
     parts_list _parts_list{};
-    std::shared_ptr<calc::part> _current_part = nullptr;
-    std::optional<std::size_t> _current_part_index = std::nullopt;
+    struct _current_part_t {
+        calc::part* part;
+        std::size_t index;
+    };
+    std::vector<_current_part_t> _current_parts{};
     void enable_part_settings(bool enable);
 
     void on_select_results(const std::vector<std::size_t>& indices);
