@@ -44,32 +44,71 @@ main_window::main_window(const wxString& title)
 }
 
 void main_window::on_select_parts(const std::vector<std::size_t>& indices) {
-    const auto size = indices.size();
-    _controls.delete_part_button->Enable(size != 0);
-    _controls.reload_part_button->Enable(size != 0);
-    _controls.copy_part_button->Enable(size == 1);
-    _controls.mirror_part_button->Enable(size == 1);
-    if (size == 1) {
-        set_part(indices[0]);
-    } else {
-        unset_part();
+    const bool any_selected = not indices.empty();
+    _controls.delete_part_button->Enable(any_selected);
+    _controls.reload_part_button->Enable(any_selected);
+    _controls.copy_part_button->Enable(any_selected);
+    _controls.mirror_part_button->Enable(any_selected);
+    enable_part_settings(any_selected);
+    _current_parts.clear();
+    if (not any_selected) {
+        return;
     }
-}
 
-void main_window::set_part(const std::size_t index) {
-    enable_part_settings(true);
-    _current_parts.clear();
-    _current_parts.emplace_back(&_parts_list.at(index), index);
-    _controls.quantity_spinner->SetValue(_current_parts[0].part->quantity);
-    _controls.min_hole_spinner->SetValue(_current_parts[0].part->min_hole);
-    _controls.minimize_checkbox->SetValue(_current_parts[0].part->rotate_min_box);
-    _controls.rotation_dropdown->SetSelection(_current_parts[0].part->rotation_index);
-    _viewport->set_mesh(_current_parts[0].part->mesh, _current_parts[0].part->centroid);
-}
+    std::optional<int> quantity{};
+    std::optional<int> min_hole{};
+    std::optional<bool> rotate_min_box{};
+    std::optional<int> rotation_index{};
+    bool first_time = true;
+    for (const std::size_t index : indices) {
+        calc::part& part = _parts_list.at(index);
+        _current_parts.emplace_back(&part, index);
+        if (first_time) {
+            first_time = false;
+            quantity.emplace(part.quantity);
+            min_hole.emplace(part.min_hole);
+            rotate_min_box.emplace(part.rotate_min_box);
+            rotation_index.emplace(part.rotation_index);
+        } else {
+            if (quantity.has_value() and *quantity != part.quantity) {
+                quantity.reset();
+            }
+            if (min_hole.has_value() and *min_hole != part.min_hole) {
+                min_hole.reset();
+            }
+            if (rotate_min_box.has_value() and *rotate_min_box != part.rotate_min_box) {
+                rotate_min_box.reset();
+            }
+            if (rotation_index.has_value() and *rotation_index != part.rotation_index) {
+                rotation_index.reset();
+            }
+        }
+    }
+    if (quantity.has_value()) {
+        _controls.quantity_spinner->SetValue(*quantity);
+    } else {
+        _controls.quantity_spinner->SetValue("");
+    }
+    if (min_hole.has_value()) {
+        _controls.min_hole_spinner->SetValue(*min_hole);
+    } else {
+        _controls.min_hole_spinner->SetValue("");
+    }
+    if (rotate_min_box.has_value()) {
+        _controls.minimize_checkbox->SetValue(*rotate_min_box);
+    } else {
+        _controls.minimize_checkbox->Set3StateValue(wxCHK_UNDETERMINED);
+    }
+    if (rotation_index.has_value()) {
+        _controls.rotation_dropdown->SetSelection(*rotation_index);
+    } else {
+        _controls.rotation_dropdown->SetSelection(wxNOT_FOUND);
+    }
 
-void main_window::unset_part() {
-    enable_part_settings(false);
-    _current_parts.clear();
+    if (_current_parts.size() == 1) {
+        const calc::part& part = *_current_parts[0].part;
+        _viewport->set_mesh(part.mesh, part.centroid);
+    }
 }
 
 void main_window::enable_part_settings(bool enable) {
@@ -111,9 +150,7 @@ void main_window::on_switch_tab(wxBookCtrlEvent& event) {
     switch (event.GetSelection()) {
         case 0: {
             _parts_list.get_selected(selected);
-            if (selected.size() == 1) {
-                set_part(selected[0]);
-            }
+            on_select_parts(selected);
             break;
         }
         case 2: {
@@ -352,16 +389,23 @@ void main_window::bind_all_controls() {
     _controls.delete_part_button->Bind(wxEVT_BUTTON, &main_window::on_delete_part, this);
     _controls.reload_part_button->Bind(wxEVT_BUTTON, &main_window::on_reload_part, this);
     _controls.copy_part_button->Bind(wxEVT_BUTTON, [this](wxCommandEvent& event) {
-        _parts_list.append(*_current_parts[0].part);
+        for (auto& current_part : _current_parts) {
+            _parts_list.append(*current_part.part);
+        }
         _parts_list.update_label();
         event.Skip();
     });
     _controls.mirror_part_button->Bind(wxEVT_BUTTON, [this](wxCommandEvent& event) {
-        _current_parts[0].part->mirrored = not _current_parts[0].part->mirrored;
-        _current_parts[0].part->mesh.mirror_x();
-        _current_parts[0].part->mesh.set_baseline({ 0, 0, 0 });
-        _parts_list.reload_text(_current_parts[0].index);
-        set_part(_current_parts[0].index);
+        static thread_local std::vector<std::size_t> indices{};
+        indices.clear();
+        for (auto& current_part : _current_parts) {
+            indices.push_back(current_part.index);
+            current_part.part->mirrored = not current_part.part->mirrored;
+            current_part.part->mesh.mirror_x();
+            current_part.part->mesh.set_baseline({ 0, 0, 0 });
+            _parts_list.reload_text(current_part.index);
+        }
+        on_select_parts(indices);
         event.Skip();
     });
 
@@ -371,21 +415,29 @@ void main_window::bind_all_controls() {
     _controls.sinterbox_result_button->Bind(wxEVT_BUTTON, &main_window::on_sinterbox_result, this);
 
     _controls.quantity_spinner->Bind(wxEVT_SPINCTRL, [this](wxSpinEvent& event) {
-        _current_parts[0].part->quantity = event.GetPosition();
-        _parts_list.reload_quantity(_current_parts[0].index);
+        for (auto& current_part : _current_parts) {
+            current_part.part->quantity = event.GetPosition();
+            _parts_list.reload_quantity(current_part.index);
+        }
         event.Skip();
     });
     _controls.min_hole_spinner->Bind(wxEVT_SPINCTRL, [this](wxSpinEvent& event) {
-        _current_parts[0].part->min_hole = event.GetPosition();
+        for (auto& current_part : _current_parts) {
+            current_part.part->min_hole = event.GetPosition();
+        }
         event.Skip();
     });
     _controls.minimize_checkbox->Bind(wxEVT_CHECKBOX, [this](wxCommandEvent& event) {
-        _current_parts[0].part->rotate_min_box = event.IsChecked();
+        for (auto& current_part : _current_parts) {
+            current_part.part->rotate_min_box = event.IsChecked();
+        }
         event.Skip();
     });
 
     _controls.rotation_dropdown->Bind(wxEVT_CHOICE, [this](wxCommandEvent& event) {
-        _current_parts[0].part->rotation_index = _controls.rotation_dropdown->GetSelection();
+        for (auto& current_part : _current_parts) {
+            current_part.part->rotation_index = _controls.rotation_dropdown->GetSelection();
+        }
         event.Skip();
     });
 
@@ -409,7 +461,7 @@ void main_window::on_new(wxCommandEvent& event) {
     {
         _controls.reset_values();
         _parts_list.delete_all();
-        unset_part();
+        on_select_parts({});
         _results_list.delete_all();
         unset_result();
         _viewport->remove_mesh();

@@ -58,7 +58,7 @@ void controls::initialize(main_window* parent) {
         min_hole_spinner = new wxSpinCtrl(panel);
         min_hole_spinner->SetRange(0, 100);
         min_hole_spinner->Disable();
-        minimize_checkbox = new wxCheckBox(panel, wxID_ANY, "");
+        minimize_checkbox = new wxCheckBox(panel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxCHK_3STATE);
         minimize_checkbox->Disable();
         wxArrayString rotation_choices;
         rotation_choices.Add("None");

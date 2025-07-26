@@ -30,8 +30,6 @@ private:
     preferences _preferences;
 
     void on_select_parts(const std::vector<std::size_t>& indices);
-    void set_part(std::size_t index);
-    void unset_part();
     parts_list _parts_list{};
     struct _current_part_t {
         calc::part* part;
