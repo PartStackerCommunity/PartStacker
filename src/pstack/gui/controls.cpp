@@ -49,6 +49,12 @@ void controls::initialize(main_window* parent) {
         mirror_part_button = new wxButton(panel, wxID_ANY, "Mirror");
         mirror_part_button->Disable();
 
+        import_part_button->SetToolTip("Import parts from mesh files");
+        delete_part_button->SetToolTip("Delete selected parts");
+        reload_part_button->SetToolTip("Reload selected parts from their files");
+        copy_part_button->SetToolTip("Make a copy of selected parts");
+        mirror_part_button->SetToolTip("Make a mirrored copy of selected parts");
+
         quantity_text = new wxStaticText(panel, wxID_ANY, "Quantity:");
         min_hole_text = new wxStaticText(panel, wxID_ANY, "Minimum hole:");
         minimize_text = new wxStaticText(panel, wxID_ANY, "Minimize box:");
@@ -71,6 +77,37 @@ void controls::initialize(main_window* parent) {
         preview_voxelization_button->Disable();
         preview_bounding_box_button = new wxButton(panel, wxID_ANY, "Preview bounding box");
         preview_bounding_box_button->Disable();
+
+        const wxString quantity_tooltip = "How many copies of the selected parts should be included in the stacking";
+        const wxString min_hole_tooltip =
+            "This setting defines the minimum hole in the selected parts through which another part can pass. "
+            "This typically applies when you have hollow or loop-shaped parts. "
+            "It may not be possible to remove a part from inside another part without a big enough hole.\n\n"
+            "The application starts with a solid cube the size of your part and then uses a cube the"
+            "size of the minimum hole to *carve* away from the other cube until it cannot go any further.\n\n"
+            "(Not yet implemented) Click the \"Preview voxelization\" button to see how changing minimum hole affects the voxelization.";
+        const wxString minimize_tooltip =
+            "This setting chooses whether the parts are first rotated to a more optimal orientation before performing any other steps. "
+            "The application will attempt to minimizes their axis-aligned bounding boxes.\n\n"
+            "Do not select this option for cosmetic parts where you care about surface finish, as this setting could apply any arbitrary rotation.";
+        const wxString rotation_tooltip =
+            "This setting chooses the set of rotations the stacking algorithm will try on the selected parts.\n\n"
+            "None = The parts will always be oriented exactly as they are imported.\n\n"
+            "Cubic = The parts will be rotated by some multiple of 90 degrees from their starting orientations.\n\n"
+            "Arbitrary = The parts will be oriented in one of 32 random possible rotations. The rotations are constant for the duration of the application, and will be re-randomized next time the application is launched.";
+        const wxString preview_voxelization_tooltip = "*NOT YET IMPLEMENTED*\nShows a preview of the voxelization. Used to check if there are any open holes into the internal volume of the part.";
+        const wxString preview_bounding_box_tooltip = "*NOT YET IMPLEMENTED*\nShows a preview of the bounding box. Used to check the part's orientation.";
+
+        quantity_text->SetToolTip(quantity_tooltip);
+        min_hole_text->SetToolTip(min_hole_tooltip);
+        minimize_text->SetToolTip(minimize_tooltip);
+        quantity_spinner->SetToolTip(quantity_tooltip);
+        min_hole_spinner->SetToolTip(min_hole_tooltip);
+        minimize_checkbox->SetToolTip(minimize_tooltip);
+        rotation_text->SetToolTip(rotation_tooltip);
+        rotation_dropdown->SetToolTip(rotation_tooltip);
+        preview_voxelization_button->SetToolTip(preview_voxelization_tooltip);
+        preview_bounding_box_button->SetToolTip(preview_bounding_box_tooltip);
     }
 
     {
