@@ -54,17 +54,23 @@ void controls::initialize(main_window* parent) {
         minimize_text = new wxStaticText(panel, wxID_ANY, "Minimize box:");
         quantity_spinner = new wxSpinCtrl(panel);
         quantity_spinner->SetRange(0, 200);
+        quantity_spinner->Disable();
         min_hole_spinner = new wxSpinCtrl(panel);
         min_hole_spinner->SetRange(0, 100);
+        min_hole_spinner->Disable();
         minimize_checkbox = new wxCheckBox(panel, wxID_ANY, "");
+        minimize_checkbox->Disable();
         wxArrayString rotation_choices;
         rotation_choices.Add("None");
         rotation_choices.Add("Cubic");
         rotation_choices.Add("Arbitrary");
         rotation_text = new wxStaticText(panel, wxID_ANY, "Rotations:");
         rotation_dropdown = new wxChoice(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, rotation_choices);
+        rotation_dropdown->Disable();
         preview_voxelization_button = new wxButton(panel, wxID_ANY, "Preview voxelization");
+        preview_voxelization_button->Disable();
         preview_bounding_box_button = new wxButton(panel, wxID_ANY, "Preview bounding box");
+        preview_bounding_box_button->Disable();
     }
 
     {

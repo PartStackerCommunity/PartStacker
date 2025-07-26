@@ -27,7 +27,6 @@ main_window::main_window(const wxString& title)
     _parts_list.initialize(_controls.notebook_panels[0]);
     _results_list.initialize(_controls.notebook_panels[2]);
     bind_all_controls();
-    enable_part_settings(false);
 
     wxGLAttributes attrs;
     attrs.PlatformDefaults().Defaults().EndList();
