@@ -32,9 +32,7 @@ struct controls {
     wxButton* delete_result_button;
     wxButton* sinterbox_result_button;
 
-    wxStaticText* min_clearance_text;
     wxStaticText* section_view_text;
-    wxSpinCtrlDouble* min_clearance_spinner;
     wxCheckBox* section_view_checkbox;
     wxButton* stack_button;
     wxGauge* progress_bar;
@@ -54,17 +52,7 @@ struct controls {
     wxButton* preview_voxelization_button;
     wxButton* preview_bounding_box_button;
 
-    // Sinterbox tab
-    wxStaticText* clearance_text;
-    wxStaticText* spacing_text;
-    wxStaticText* thickness_text;
-    wxStaticText* width_text;
-    wxSpinCtrlDouble* clearance_spinner;
-    wxSpinCtrlDouble* spacing_spinner;
-    wxSpinCtrlDouble* thickness_spinner;
-    wxSpinCtrlDouble* width_spinner;
-
-    // Bounding box tab
+    // Stack settings tab
     wxStaticText* initial_x_text;
     wxStaticText* initial_y_text;
     wxStaticText* initial_z_text;
@@ -77,6 +65,18 @@ struct controls {
     wxSpinCtrl* maximum_x_spinner;
     wxSpinCtrl* maximum_y_spinner;
     wxSpinCtrl* maximum_z_spinner;
+    wxStaticText* min_clearance_text;
+    wxSpinCtrlDouble* min_clearance_spinner;
+
+    // Sinterbox tab
+    wxStaticText* clearance_text;
+    wxStaticText* spacing_text;
+    wxStaticText* thickness_text;
+    wxStaticText* width_text;
+    wxSpinCtrlDouble* clearance_spinner;
+    wxSpinCtrlDouble* spacing_spinner;
+    wxSpinCtrlDouble* thickness_spinner;
+    wxSpinCtrlDouble* width_spinner;
 };
 
 } // namespace pstack::gui

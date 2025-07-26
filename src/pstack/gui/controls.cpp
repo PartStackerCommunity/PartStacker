@@ -75,6 +75,7 @@ void controls::initialize(main_window* parent) {
 
     {
         const auto panel = notebook_panels[1];
+
         initial_x_text = new wxStaticText(panel, wxID_ANY, "Initial X:");
         initial_y_text = new wxStaticText(panel, wxID_ANY, "Initial Y:");
         initial_z_text = new wxStaticText(panel, wxID_ANY, "Initial Z:");
@@ -97,6 +98,28 @@ void controls::initialize(main_window* parent) {
         min_clearance_spinner->SetDigits(2);
         min_clearance_spinner->SetIncrement(0.05);
         min_clearance_spinner->SetRange(0.5, 2);
+
+        constexpr auto make_tooltip = [](const char* state, char dir) {
+            return wxString::Format("%s size of the bounding box %c direction", state, dir);
+        };
+        initial_x_text->SetToolTip(make_tooltip("Initial", 'X'));
+        initial_y_text->SetToolTip(make_tooltip("Initial", 'Y'));
+        initial_z_text->SetToolTip(make_tooltip("Initial", 'Z'));
+        maximum_x_text->SetToolTip(make_tooltip("Maximum", 'X'));
+        maximum_y_text->SetToolTip(make_tooltip("Maximum", 'Y'));
+        maximum_z_text->SetToolTip(make_tooltip("Maximum", 'Z'));
+        initial_x_spinner->SetToolTip(make_tooltip("Initial", 'X'));
+        initial_y_spinner->SetToolTip(make_tooltip("Initial", 'Y'));
+        initial_z_spinner->SetToolTip(make_tooltip("Initial", 'Z'));
+        maximum_x_spinner->SetToolTip(make_tooltip("Maximum", 'X'));
+        maximum_y_spinner->SetToolTip(make_tooltip("Maximum", 'Y'));
+        maximum_z_spinner->SetToolTip(make_tooltip("Maximum", 'Z'));
+
+        const wxString min_clearance_tooltip =
+            "The minimum distance maintained between stacked parts. "
+            "Also the voxel size fed into the stacking algorithm.";
+        min_clearance_text->SetToolTip(min_clearance_tooltip);
+        min_clearance_spinner->SetToolTip(min_clearance_tooltip);
     }
 
     {
