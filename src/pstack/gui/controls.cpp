@@ -29,6 +29,7 @@ void controls::initialize(main_window* parent) {
     section_view_checkbox = new wxCheckBox(parent, wxID_ANY, "");
     progress_bar = new wxGauge(parent, wxID_ANY, 100);
     stack_button = new wxButton(parent, wxID_ANY, "Stack");
+    stack_button->SetToolTip("Start and stop the stacking process");
 
     std::tie(notebook, notebook_panels) = make_tab_panels(parent, {
         "Parts",
@@ -167,6 +168,11 @@ void controls::initialize(main_window* parent) {
         delete_result_button->Disable();
         sinterbox_result_button = new wxButton(panel, wxID_ANY, "Add sinterbox");
         sinterbox_result_button->Disable();
+
+        export_result_button->SetToolTip("Export selected result");
+        delete_result_button->SetToolTip("Delete selected results");
+        sinterbox_result_button->SetToolTip("Add sinterbox to selected result, using the below settings, only if it does not already have a sinterbox");
+
         clearance_text = new wxStaticText(panel, wxID_ANY, "Clearance:");
         spacing_text = new wxStaticText(panel, wxID_ANY, "Spacing:");
         thickness_text = new wxStaticText(panel, wxID_ANY, "Thickness:");
@@ -181,6 +187,19 @@ void controls::initialize(main_window* parent) {
         spacing_spinner = make_spinner(1, 20, 0.5);
         thickness_spinner = make_spinner(0.1, 4, 0.1);
         width_spinner = make_spinner(0.1, 4, 0.1);
+
+        const wxString clearance_tooltip = "Distance from the result's bounding box to the inner wall of the sinterbox";
+        const wxString spacing_tooltip = "Average distance between parallel bars/wires of the sinterbox";
+        const wxString thickness_tooltip = "Depth from the outer wall to the inner wall of the sinterbox";
+        const wxString width_tooltip = "Width of the bars/wires of the sinterbox";
+        clearance_text->SetToolTip(clearance_tooltip);
+        spacing_text->SetToolTip(spacing_tooltip);
+        thickness_text->SetToolTip(thickness_tooltip);
+        width_text->SetToolTip(width_tooltip);
+        clearance_spinner->SetToolTip(clearance_tooltip);
+        spacing_spinner->SetToolTip(spacing_tooltip);
+        thickness_spinner->SetToolTip(thickness_tooltip);
+        width_spinner->SetToolTip(width_tooltip);
     }
 
     reset_values();
