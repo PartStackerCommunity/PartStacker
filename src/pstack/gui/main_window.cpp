@@ -59,7 +59,7 @@ void main_window::on_select_parts(const std::vector<std::size_t>& indices) {
 void main_window::set_part(const std::size_t index) {
     enable_part_settings(true);
     _current_parts.clear();
-    _current_parts.emplace_back(_parts_list.at(index).get(), index);
+    _current_parts.emplace_back(&_parts_list.at(index), index);
     _controls.quantity_spinner->SetValue(_current_parts[0].part->quantity);
     _controls.min_hole_spinner->SetValue(_current_parts[0].part->min_hole);
     _controls.minimize_checkbox->SetValue(_current_parts[0].part->rotate_min_box);
@@ -448,7 +448,7 @@ void main_window::on_import_part(wxCommandEvent& event) {
     }
     _parts_list.update_label();
     if (paths.size() == 1) {
-        const calc::part& part = *_parts_list.at(_parts_list.rows() - 1);
+        const calc::part& part = _parts_list.at(_parts_list.rows() - 1);
         _viewport->set_mesh(part.mesh, part.centroid);
     }
 

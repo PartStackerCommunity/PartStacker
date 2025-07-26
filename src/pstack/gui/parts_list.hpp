@@ -28,8 +28,8 @@ public:
     void reload_quantity(std::size_t row);
     void delete_all();
     void delete_selected();
-    std::shared_ptr<calc::part> at(std::size_t row) {
-        return _parts.at(row);
+    calc::part& at(std::size_t row) {
+        return *_parts.at(row);
     }
     std::vector<std::shared_ptr<const calc::part>> get_all() const;
 
