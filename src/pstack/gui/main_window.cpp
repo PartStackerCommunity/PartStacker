@@ -296,7 +296,7 @@ wxMenuBar* main_window::make_menu_bar() {
         new_ = 1, open, save, close,
         import, export_,
         pref_scroll, pref_extra,
-        about, website,
+        about, website, issue,
     };
     menu_bar->Bind(wxEVT_MENU, [this](wxCommandEvent& event) {
         switch (menu_item{ event.GetId() }) {
@@ -345,6 +345,10 @@ wxMenuBar* main_window::make_menu_bar() {
                 wxLaunchDefaultBrowser("https://github.com/PartStackerCommunity/PartStacker/");
                 break;
             }
+            case menu_item::issue: {
+                wxLaunchDefaultBrowser("https://github.com/PartStackerCommunity/PartStacker/issues/new");
+                break;
+            }
         }
         event.Skip();
     });
@@ -369,6 +373,7 @@ wxMenuBar* main_window::make_menu_bar() {
     auto help_menu = new wxMenu();
     help_menu->Append((int)menu_item::about, "&About", "About PartStacker");
     help_menu->Append((int)menu_item::website, "Visit &website", "Open PartStacker GitHub");
+    help_menu->Append((int)menu_item::issue, "&Report an issue", "Create new issue on GitHub");
     menu_bar->Append(help_menu, "&Help");
 
     return menu_bar;
