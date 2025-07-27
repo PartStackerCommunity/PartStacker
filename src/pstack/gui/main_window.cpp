@@ -259,7 +259,7 @@ void main_window::enable_on_stacking(const bool starting) {
         _results_list.get_selected(selected);
         _controls.export_result_button->Enable(selected.size() == 1);
         _controls.delete_result_button->Enable(selected.size() != 0);
-        _controls.sinterbox_result_button->Enable(selected.size() != 0);
+        _controls.sinterbox_result_button->Enable(selected.size() == 1);
     } else {
         _controls.import_part_button->Disable();
         _controls.delete_part_button->Disable();
