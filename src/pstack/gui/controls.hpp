@@ -50,7 +50,6 @@ struct controls {
     wxStaticText* rotation_text;
     wxChoice* rotation_dropdown;
     wxButton* preview_voxelization_button;
-    wxButton* preview_bounding_box_button;
 
     // Stack settings tab
     wxStaticText* initial_x_text;

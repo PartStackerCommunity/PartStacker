@@ -117,7 +117,6 @@ void main_window::enable_part_settings(bool enable) {
     _controls.minimize_checkbox->Enable(enable);
     _controls.rotation_dropdown->Enable(enable);
     _controls.preview_voxelization_button->Enable(enable);
-    _controls.preview_bounding_box_button->Enable(enable);
 }
 
 void main_window::on_select_results(const std::vector<std::size_t>& indices) {
@@ -295,7 +294,7 @@ wxMenuBar* main_window::make_menu_bar() {
          // Menu items cannot be 0 on Mac
         new_ = 1, open, save, close,
         import, export_,
-        pref_scroll, pref_extra,
+        pref_scroll, pref_extra, pref_bounding_box,
         about, website, issue,
     };
     menu_bar->Bind(wxEVT_MENU, [this](wxCommandEvent& event) {
@@ -330,6 +329,11 @@ wxMenuBar* main_window::make_menu_bar() {
                 _preferences.extra_parts = not _preferences.extra_parts;
                 _parts_list.show_extra(_preferences.extra_parts);
                 _parts_list.reload_all_text();
+                break;
+            }
+            case menu_item::pref_bounding_box: {
+                _preferences.show_bounding_box = not _preferences.show_bounding_box;
+                _viewport->show_bounding_box(_preferences.show_bounding_box);
                 break;
             }
             case menu_item::about: {
@@ -368,6 +372,7 @@ wxMenuBar* main_window::make_menu_bar() {
     auto preferences_menu = new wxMenu();
     preferences_menu->AppendCheckItem((int)menu_item::pref_scroll, "Invert &scroll", "Change the viewport scroll direction");
     preferences_menu->AppendCheckItem((int)menu_item::pref_extra, "Display &extra parts", "Display the quantity of extra parts separately");
+    preferences_menu->AppendCheckItem((int)menu_item::pref_bounding_box, "Show &bounding box", "Show the bounding box around the currently displayed mesh");
     menu_bar->Append(preferences_menu, "&Preferences");
 
     auto help_menu = new wxMenu();
@@ -447,9 +452,6 @@ void main_window::bind_all_controls() {
     });
 
     _controls.preview_voxelization_button->Bind(wxEVT_BUTTON, [this](wxCommandEvent& event) {
-        wxMessageBox("Not yet implemented", "Error", wxICON_WARNING);
-    });
-    _controls.preview_bounding_box_button->Bind(wxEVT_BUTTON, [this](wxCommandEvent& event) {
         wxMessageBox("Not yet implemented", "Error", wxICON_WARNING);
     });
 
@@ -696,7 +698,6 @@ void main_window::arrange_tab_part_settings(wxPanel* panel) {
         rotation_sizer->Add(_controls.rotation_dropdown, 0, wxALIGN_CENTER_VERTICAL);
         button_sizer->Add(rotation_sizer);
         button_sizer->Add(_controls.preview_voxelization_button);
-        button_sizer->Add(_controls.preview_bounding_box_button);
 
         lower_sizer->Add(label_sizer, 0, wxEXPAND);
         lower_sizer->AddSpacer(panel->FromDIP(3 * constants::inner_border));

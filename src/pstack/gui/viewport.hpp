@@ -38,6 +38,10 @@ public:
     void scroll_direction(bool invert_scroll) {
         _scroll_direction = invert_scroll ? -1 : 1;
     }
+    void show_bounding_box(bool show) {
+        _show_bounding_box = show;
+        render();
+    }
 
 private:
     void render(wxDC& dc);
