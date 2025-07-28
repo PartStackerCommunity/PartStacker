@@ -107,8 +107,6 @@ void viewport::set_mesh(const calc::mesh& mesh, const geo::point3<float>& centro
     const auto size = bounding.max - bounding.min;
     const auto zoom_factor = 1 / std::max({ size.x, size.y, size.z });
     _transform.scale_mesh(zoom_factor);
-    _shader.set_uniform("transform_vertices", _transform.for_vertices());
-    _shader.set_uniform("transform_normals", _transform.for_normals());
 
     render();
 }
@@ -121,8 +119,6 @@ void viewport::remove_mesh() {
 
     _transform.translation({ 0, 0, 0 });
     _transform.scale_mesh(1);
-    _shader.set_uniform("transform_vertices", _transform.for_vertices());
-    _shader.set_uniform("transform_normals", _transform.for_normals());
 
     render();
 }
@@ -140,7 +136,10 @@ void viewport::render(wxDC& dc) {
     SetCurrent(*_opengl_context);
 
     graphics::clear(40 / 255.0, 50 / 255.0, 120 / 255.0, 1);
+
     _shader.use_program();
+    _shader.set_uniform("transform_vertices", _transform.for_vertices());
+    _shader.set_uniform("transform_normals", _transform.for_normals());
     _vao.bind_arrays();
     graphics::draw_triangles(_vao[0].size());
 
@@ -164,8 +163,6 @@ void viewport::on_size(wxSizeEvent& event) {
 
         static constexpr float scale_baseline = 866;
         _transform.scale_screen(scale_baseline / _viewport_size.x, scale_baseline / _viewport_size.y);
-        _shader.set_uniform("transform_vertices", _transform.for_vertices());
-        _shader.set_uniform("transform_normals", _transform.for_normals());
 
         if (first_appearance) {
             render();
@@ -200,8 +197,6 @@ void viewport::on_scroll(wxMouseEvent& evt) {
     const double zoom_amount = ((double)evt.GetWheelRotation() / (double)evt.GetWheelDelta()) / 4;
     const float zoom_factor = (float)std::pow(2.0, _scroll_direction * zoom_amount);
     _transform.zoom_by(zoom_factor);
-    _shader.set_uniform("transform_vertices", _transform.for_vertices());
-    _shader.set_uniform("transform_normals", _transform.for_normals());
     render();
 }
 
@@ -209,8 +204,6 @@ void viewport::on_move_by(wxPoint position) {
     const auto [dx, dy] = _cached_position - position;
     _cached_position = position;
     _transform.rotate_by((float)dy / 256, (float)dx / 256);
-    _shader.set_uniform("transform_vertices", _transform.for_vertices());
-    _shader.set_uniform("transform_normals", _transform.for_normals());
     render();
 }
 
