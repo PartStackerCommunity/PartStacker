@@ -28,7 +28,7 @@ viewport::viewport(main_window* parent, const wxGLAttributes& canvasAttrs)
     Bind(wxEVT_MOUSEWHEEL, &viewport::on_scroll, this);
 }
 
-constexpr auto vertex_shader_source = R"(
+constexpr auto mesh_vertex_shader_source = R"(
     #version 330 core
     layout (location = 0) in vec3 aPos;
     layout (location = 1) in vec3 aNormal;
@@ -41,7 +41,7 @@ constexpr auto vertex_shader_source = R"(
     }
 )";
 
-constexpr auto fragment_shader_source = R"(
+constexpr auto mesh_fragment_shader_source = R"(
     #version 330 core
     in vec4 frag_normal;
     out vec4 frag_colour;
@@ -69,22 +69,22 @@ bool viewport::initialize() {
         return false;
     }
 
-    if (const auto err = _shader.initialize(vertex_shader_source, fragment_shader_source);
+    if (const auto err = _mesh_shader.initialize(mesh_vertex_shader_source, mesh_fragment_shader_source);
         not err.has_value())
     {
-        wxMessageBox(wxString::Format("Error in creating OpenGL shader.\n%s", err.error()),
-                     "OpenGL shader error", wxOK | wxICON_ERROR, this);
+        wxMessageBox(wxString::Format("Error in creating OpenGL shader for the mesh.\n%s", err.error()),
+                     "OpenGL mesh shader error", wxOK | wxICON_ERROR, this);
         return false;
     }
 
-    _vao.initialize();
+    _mesh_vao.initialize();
     remove_mesh();
 
     return true;
 }
 
 void viewport::set_mesh(const calc::mesh& mesh, const geo::point3<float>& centroid) {
-    _vao.clear();
+    _mesh_vao.clear();
 
     using vector3 = geo::vector3<float>;
 
@@ -99,8 +99,8 @@ void viewport::set_mesh(const calc::mesh& mesh, const geo::point3<float>& centro
         normals.push_back(t.normal);
     }
 
-    _vao.add_vertex_buffer(0, std::move(vertices));
-    _vao.add_vertex_buffer(1, std::move(normals));
+    _mesh_vao.add_vertex_buffer(0, std::move(vertices));
+    _mesh_vao.add_vertex_buffer(1, std::move(normals));
 
     const auto bounding = mesh.bounding();
     _transform.translation(geo::origin3<float> - centroid);
@@ -112,10 +112,9 @@ void viewport::set_mesh(const calc::mesh& mesh, const geo::point3<float>& centro
 }
 
 void viewport::remove_mesh() {
-    _vao.clear();
-
-    _vao.add_vertex_buffer(0, {});
-    _vao.add_vertex_buffer(1, {});
+    _mesh_vao.clear();
+    _mesh_vao.add_vertex_buffer(0, {});
+    _mesh_vao.add_vertex_buffer(1, {});
 
     _transform.translation({ 0, 0, 0 });
     _transform.scale_mesh(1);
@@ -137,11 +136,11 @@ void viewport::render(wxDC& dc) {
 
     graphics::clear(40 / 255.0, 50 / 255.0, 120 / 255.0, 1);
 
-    _shader.use_program();
-    _shader.set_uniform("transform_vertices", _transform.for_vertices());
-    _shader.set_uniform("transform_normals", _transform.for_normals());
-    _vao.bind_arrays();
-    graphics::draw_triangles(_vao[0].size());
+    _mesh_shader.use_program();
+    _mesh_shader.set_uniform("transform_vertices", _transform.for_vertices());
+    _mesh_shader.set_uniform("transform_normals", _transform.for_normals());
+    _mesh_vao.bind_arrays();
+    graphics::draw_triangles(_mesh_vao[0].size());
 
     SwapBuffers();
 }

@@ -51,8 +51,8 @@ private:
     std::unique_ptr<wxGLContext> _opengl_context = nullptr;
     bool _opengl_initialized = false;
 
-    graphics::shader _shader{};
-    graphics::vertex_array_object _vao{};
+    graphics::shader _mesh_shader{};
+    graphics::vertex_array_object _mesh_vao{};
     transformation _transform{};
 
     wxSize _viewport_size{};
