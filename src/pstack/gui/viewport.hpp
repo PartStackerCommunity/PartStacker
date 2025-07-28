@@ -27,6 +27,12 @@ private:
 public:
     void set_mesh(const calc::mesh& mesh, const geo::point3<float>& centroid);
     void remove_mesh();
+
+private:
+    void set_mesh_vao(const calc::mesh& mesh);
+    void set_bounding_box_vao(geo::point3<float> min, geo::point3<float> max);
+
+public:
     void render();
 
     void scroll_direction(bool invert_scroll) {
@@ -53,6 +59,11 @@ private:
 
     graphics::shader _mesh_shader{};
     graphics::vertex_array_object _mesh_vao{};
+
+    graphics::shader _bounding_box_shader{};
+    graphics::vertex_array_object _bounding_box_vao{};
+    bool _show_bounding_box = false;
+
     transformation _transform{};
 
     wxSize _viewport_size{};

@@ -54,6 +54,23 @@ constexpr auto mesh_fragment_shader_source = R"(
     }
 )";
 
+constexpr auto bounding_box_vertex_shader_source = R"(
+    #version 330 core
+    layout (location = 0) in vec3 aPos;
+    uniform mat4 transform_vertices;
+    void main() {
+        gl_Position = transform_vertices * vec4(aPos, 1.0);
+    }
+)";
+
+constexpr auto bounding_box_fragment_shader_source = R"(
+    #version 330 core
+    out vec4 frag_colour;
+    void main() {
+        frag_colour = vec4(224.0 / 255.0, 110.0 / 255.0, 0.0, 1.0);
+    }
+)";
+
 bool viewport::initialize() {
     if (!_opengl_context) {
         return false;
@@ -77,32 +94,27 @@ bool viewport::initialize() {
         return false;
     }
 
+    if (const auto err = _bounding_box_shader.initialize(bounding_box_vertex_shader_source, bounding_box_fragment_shader_source);
+        not err.has_value())
+    {
+        wxMessageBox(wxString::Format("Error in creating OpenGL shader for the bounding box.\n%s", err.error()),
+                     "OpenGL line shader error", wxOK | wxICON_ERROR, this);
+        return false;
+    }
+
     _mesh_vao.initialize();
+    _bounding_box_vao.initialize();
     remove_mesh();
 
     return true;
 }
 
 void viewport::set_mesh(const calc::mesh& mesh, const geo::point3<float>& centroid) {
-    _mesh_vao.clear();
-
-    using vector3 = geo::vector3<float>;
-
-    std::vector<vector3> vertices;
-    std::vector<vector3> normals;
-    for (const auto& t : mesh.triangles()) {
-        vertices.push_back(t.v1.as_vector());
-        vertices.push_back(t.v2.as_vector());
-        vertices.push_back(t.v3.as_vector());
-        normals.push_back(t.normal);
-        normals.push_back(t.normal);
-        normals.push_back(t.normal);
-    }
-
-    _mesh_vao.add_vertex_buffer(0, std::move(vertices));
-    _mesh_vao.add_vertex_buffer(1, std::move(normals));
-
     const auto bounding = mesh.bounding();
+
+    set_mesh_vao(mesh);
+    set_bounding_box_vao(bounding.min, bounding.max);
+
     _transform.translation(geo::origin3<float> - centroid);
     const auto size = bounding.max - bounding.min;
     const auto zoom_factor = 1 / std::max({ size.x, size.y, size.z });
@@ -116,10 +128,57 @@ void viewport::remove_mesh() {
     _mesh_vao.add_vertex_buffer(0, {});
     _mesh_vao.add_vertex_buffer(1, {});
 
+    _bounding_box_vao.clear();
+    _bounding_box_vao.add_vertex_buffer(0, {});
+
     _transform.translation({ 0, 0, 0 });
     _transform.scale_mesh(1);
 
     render();
+}
+
+void viewport::set_mesh_vao(const calc::mesh& mesh) {
+    _mesh_vao.clear();
+    std::vector<geo::vector3<float>> vertices;
+    std::vector<geo::vector3<float>> normals;
+    for (const auto& t : mesh.triangles()) {
+        vertices.push_back(t.v1.as_vector());
+        vertices.push_back(t.v2.as_vector());
+        vertices.push_back(t.v3.as_vector());
+        normals.push_back(t.normal);
+        normals.push_back(t.normal);
+        normals.push_back(t.normal);
+    }
+    _mesh_vao.add_vertex_buffer(0, std::move(vertices));
+    _mesh_vao.add_vertex_buffer(1, std::move(normals));
+}
+
+void viewport::set_bounding_box_vao(const geo::point3<float> min, const geo::point3<float> max) {
+    _bounding_box_vao.clear();
+    std::vector<geo::vector3<float>> vertices{
+        { min.x, min.y, min.z },
+        { min.x, min.y, max.z },
+        { min.x, max.y, min.z },
+        { min.x, max.y, max.z },
+        { max.x, min.y, min.z },
+        { max.x, min.y, max.z },
+        { max.x, max.y, min.z },
+        { max.x, max.y, max.z },
+    };
+    _bounding_box_vao.add_vertex_buffer(0, std::vector{
+        vertices[0], vertices[1],
+        vertices[2], vertices[3],
+        vertices[4], vertices[5],
+        vertices[6], vertices[7],
+        vertices[0], vertices[2],
+        vertices[1], vertices[3],
+        vertices[4], vertices[6],
+        vertices[5], vertices[7],
+        vertices[0], vertices[4],
+        vertices[1], vertices[5],
+        vertices[2], vertices[6],
+        vertices[3], vertices[7],
+    });
 }
 
 void viewport::render() {
@@ -141,6 +200,13 @@ void viewport::render(wxDC& dc) {
     _mesh_shader.set_uniform("transform_normals", _transform.for_normals());
     _mesh_vao.bind_arrays();
     graphics::draw_triangles(_mesh_vao[0].size());
+
+    if (_show_bounding_box) {
+        _bounding_box_shader.use_program();
+        _bounding_box_shader.set_uniform("transform_vertices", _transform.for_vertices());
+        _bounding_box_vao.bind_arrays();
+        graphics::draw_lines(_bounding_box_vao[0].size());
+    }
 
     SwapBuffers();
 }
