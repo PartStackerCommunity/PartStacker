@@ -28,7 +28,7 @@ viewport::viewport(main_window* parent, const wxGLAttributes& canvasAttrs)
     Bind(wxEVT_MOUSEWHEEL, &viewport::on_scroll, this);
 }
 
-constexpr auto vertex_shader_source = R"(
+constexpr auto mesh_vertex_shader_source = R"(
     #version 330 core
     layout (location = 0) in vec3 aPos;
     layout (location = 1) in vec3 aNormal;
@@ -41,7 +41,7 @@ constexpr auto vertex_shader_source = R"(
     }
 )";
 
-constexpr auto fragment_shader_source = R"(
+constexpr auto mesh_fragment_shader_source = R"(
     #version 330 core
     in vec4 frag_normal;
     out vec4 frag_colour;
@@ -51,6 +51,23 @@ constexpr auto fragment_shader_source = R"(
         const float shade_factor = shade_min - shade_max; // This is negative
         float shade = (frag_normal.z * shade_factor) + shade_min;
         frag_colour = vec4(shade, shade, shade, 1.0);
+    }
+)";
+
+constexpr auto bounding_box_vertex_shader_source = R"(
+    #version 330 core
+    layout (location = 0) in vec3 aPos;
+    uniform mat4 transform_vertices;
+    void main() {
+        gl_Position = transform_vertices * vec4(aPos, 1.0);
+    }
+)";
+
+constexpr auto bounding_box_fragment_shader_source = R"(
+    #version 330 core
+    out vec4 frag_colour;
+    void main() {
+        frag_colour = vec4(224.0 / 255.0, 110.0 / 255.0, 0.0, 1.0);
     }
 )";
 
@@ -69,27 +86,61 @@ bool viewport::initialize() {
         return false;
     }
 
-    if (const auto err = _shader.initialize(vertex_shader_source, fragment_shader_source);
+    if (const auto err = _mesh_shader.initialize(mesh_vertex_shader_source, mesh_fragment_shader_source);
         not err.has_value())
     {
-        wxMessageBox(wxString::Format("Error in creating OpenGL shader.\n%s", err.error()),
-                     "OpenGL shader error", wxOK | wxICON_ERROR, this);
+        wxMessageBox(wxString::Format("Error in creating OpenGL shader for the mesh.\n%s", err.error()),
+                     "OpenGL mesh shader error", wxOK | wxICON_ERROR, this);
         return false;
     }
 
-    _vao.initialize();
+    if (const auto err = _bounding_box_shader.initialize(bounding_box_vertex_shader_source, bounding_box_fragment_shader_source);
+        not err.has_value())
+    {
+        wxMessageBox(wxString::Format("Error in creating OpenGL shader for the bounding box.\n%s", err.error()),
+                     "OpenGL line shader error", wxOK | wxICON_ERROR, this);
+        return false;
+    }
+
+    _mesh_vao.initialize();
+    _bounding_box_vao.initialize();
     remove_mesh();
 
     return true;
 }
 
 void viewport::set_mesh(const calc::mesh& mesh, const geo::point3<float>& centroid) {
-    _vao.clear();
+    const auto bounding = mesh.bounding();
 
-    using vector3 = geo::vector3<float>;
+    set_mesh_vao(mesh);
+    set_bounding_box_vao(bounding.min, bounding.max);
 
-    std::vector<vector3> vertices;
-    std::vector<vector3> normals;
+    _transform.translation(geo::origin3<float> - centroid);
+    const auto size = bounding.max - bounding.min;
+    const auto zoom_factor = 1 / std::max({ size.x, size.y, size.z });
+    _transform.scale_mesh(zoom_factor);
+
+    render();
+}
+
+void viewport::remove_mesh() {
+    _mesh_vao.clear();
+    _mesh_vao.add_vertex_buffer(0, {});
+    _mesh_vao.add_vertex_buffer(1, {});
+
+    _bounding_box_vao.clear();
+    _bounding_box_vao.add_vertex_buffer(0, {});
+
+    _transform.translation({ 0, 0, 0 });
+    _transform.scale_mesh(1);
+
+    render();
+}
+
+void viewport::set_mesh_vao(const calc::mesh& mesh) {
+    _mesh_vao.clear();
+    std::vector<geo::vector3<float>> vertices;
+    std::vector<geo::vector3<float>> normals;
     for (const auto& t : mesh.triangles()) {
         vertices.push_back(t.v1.as_vector());
         vertices.push_back(t.v2.as_vector());
@@ -98,33 +149,36 @@ void viewport::set_mesh(const calc::mesh& mesh, const geo::point3<float>& centro
         normals.push_back(t.normal);
         normals.push_back(t.normal);
     }
-
-    _vao.add_vertex_buffer(0, std::move(vertices));
-    _vao.add_vertex_buffer(1, std::move(normals));
-
-    const auto bounding = mesh.bounding();
-    _transform.translation(geo::origin3<float> - centroid);
-    const auto size = bounding.max - bounding.min;
-    const auto zoom_factor = 1 / std::max({ size.x, size.y, size.z });
-    _transform.scale_mesh(zoom_factor);
-    _shader.set_uniform("transform_vertices", _transform.for_vertices());
-    _shader.set_uniform("transform_normals", _transform.for_normals());
-
-    render();
+    _mesh_vao.add_vertex_buffer(0, std::move(vertices));
+    _mesh_vao.add_vertex_buffer(1, std::move(normals));
 }
 
-void viewport::remove_mesh() {
-    _vao.clear();
-
-    _vao.add_vertex_buffer(0, {});
-    _vao.add_vertex_buffer(1, {});
-
-    _transform.translation({ 0, 0, 0 });
-    _transform.scale_mesh(1);
-    _shader.set_uniform("transform_vertices", _transform.for_vertices());
-    _shader.set_uniform("transform_normals", _transform.for_normals());
-
-    render();
+void viewport::set_bounding_box_vao(const geo::point3<float> min, const geo::point3<float> max) {
+    _bounding_box_vao.clear();
+    std::vector<geo::vector3<float>> vertices{
+        { min.x, min.y, min.z },
+        { min.x, min.y, max.z },
+        { min.x, max.y, min.z },
+        { min.x, max.y, max.z },
+        { max.x, min.y, min.z },
+        { max.x, min.y, max.z },
+        { max.x, max.y, min.z },
+        { max.x, max.y, max.z },
+    };
+    _bounding_box_vao.add_vertex_buffer(0, std::vector{
+        vertices[0], vertices[1],
+        vertices[2], vertices[3],
+        vertices[4], vertices[5],
+        vertices[6], vertices[7],
+        vertices[0], vertices[2],
+        vertices[1], vertices[3],
+        vertices[4], vertices[6],
+        vertices[5], vertices[7],
+        vertices[0], vertices[4],
+        vertices[1], vertices[5],
+        vertices[2], vertices[6],
+        vertices[3], vertices[7],
+    });
 }
 
 void viewport::render() {
@@ -140,9 +194,19 @@ void viewport::render(wxDC& dc) {
     SetCurrent(*_opengl_context);
 
     graphics::clear(40 / 255.0, 50 / 255.0, 120 / 255.0, 1);
-    _shader.use_program();
-    _vao.bind_arrays();
-    graphics::draw_triangles(_vao[0].size());
+
+    _mesh_shader.use_program();
+    _mesh_shader.set_uniform("transform_vertices", _transform.for_vertices());
+    _mesh_shader.set_uniform("transform_normals", _transform.for_normals());
+    _mesh_vao.bind_arrays();
+    graphics::draw_triangles(_mesh_vao[0].size());
+
+    if (_show_bounding_box) {
+        _bounding_box_shader.use_program();
+        _bounding_box_shader.set_uniform("transform_vertices", _transform.for_vertices());
+        _bounding_box_vao.bind_arrays();
+        graphics::draw_lines(_bounding_box_vao[0].size());
+    }
 
     SwapBuffers();
 }
@@ -164,8 +228,6 @@ void viewport::on_size(wxSizeEvent& event) {
 
         static constexpr float scale_baseline = 866;
         _transform.scale_screen(scale_baseline / _viewport_size.x, scale_baseline / _viewport_size.y);
-        _shader.set_uniform("transform_vertices", _transform.for_vertices());
-        _shader.set_uniform("transform_normals", _transform.for_normals());
 
         if (first_appearance) {
             render();
@@ -200,8 +262,6 @@ void viewport::on_scroll(wxMouseEvent& evt) {
     const double zoom_amount = ((double)evt.GetWheelRotation() / (double)evt.GetWheelDelta()) / 4;
     const float zoom_factor = (float)std::pow(2.0, _scroll_direction * zoom_amount);
     _transform.zoom_by(zoom_factor);
-    _shader.set_uniform("transform_vertices", _transform.for_vertices());
-    _shader.set_uniform("transform_normals", _transform.for_normals());
     render();
 }
 
@@ -209,8 +269,6 @@ void viewport::on_move_by(wxPoint position) {
     const auto [dx, dy] = _cached_position - position;
     _cached_position = position;
     _transform.rotate_by((float)dy / 256, (float)dx / 256);
-    _shader.set_uniform("transform_vertices", _transform.for_vertices());
-    _shader.set_uniform("transform_normals", _transform.for_normals());
     render();
 }
 

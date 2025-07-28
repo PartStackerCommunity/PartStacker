@@ -31,4 +31,8 @@ void draw_triangles(GLsizei count) {
     glDrawArrays(GL_TRIANGLES, 0, count);
 }
 
+void draw_lines(GLsizei count) {
+    glDrawArrays(GL_LINES, 0, count);
+}
+
 } // namespace pstack::graphics

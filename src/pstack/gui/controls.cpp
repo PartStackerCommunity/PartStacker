@@ -76,8 +76,6 @@ void controls::initialize(main_window* parent) {
         rotation_dropdown->Disable();
         preview_voxelization_button = new wxButton(panel, wxID_ANY, "Preview voxelization");
         preview_voxelization_button->Disable();
-        preview_bounding_box_button = new wxButton(panel, wxID_ANY, "Preview bounding box");
-        preview_bounding_box_button->Disable();
 
         const wxString quantity_tooltip = "How many copies of the selected parts should be included in the stacking";
         const wxString min_hole_tooltip =
@@ -97,7 +95,6 @@ void controls::initialize(main_window* parent) {
             "Cubic = The parts will be rotated by some multiple of 90 degrees from their starting orientations.\n\n"
             "Arbitrary = The parts will be oriented in one of 32 random possible rotations. The rotations are constant for the duration of the application, and will be re-randomized next time the application is launched.";
         const wxString preview_voxelization_tooltip = "*NOT YET IMPLEMENTED*\nShows a preview of the voxelization. Used to check if there are any open holes into the internal volume of the part.";
-        const wxString preview_bounding_box_tooltip = "*NOT YET IMPLEMENTED*\nShows a preview of the bounding box. Used to check the part's orientation.";
 
         quantity_text->SetToolTip(quantity_tooltip);
         min_hole_text->SetToolTip(min_hole_tooltip);
@@ -108,7 +105,6 @@ void controls::initialize(main_window* parent) {
         rotation_text->SetToolTip(rotation_tooltip);
         rotation_dropdown->SetToolTip(rotation_tooltip);
         preview_voxelization_button->SetToolTip(preview_voxelization_tooltip);
-        preview_bounding_box_button->SetToolTip(preview_bounding_box_tooltip);
     }
 
     {

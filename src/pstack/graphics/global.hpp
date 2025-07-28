@@ -14,6 +14,8 @@ void clear(float r, float g, float b, float a);
 
 void draw_triangles(int count);
 
+void draw_lines(int count);
+
 } // namespace pstack::graphics
 
 #endif // PSTACK_GRAPHICS_GLOBAL_HPP
