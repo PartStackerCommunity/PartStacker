@@ -190,10 +190,10 @@ void main_window::on_stacking_start() {
                 _controls.progress_bar->SetValue(static_cast<int>(100 * progress / total));
             });
         },
-        .display_mesh = [this](const calc::mesh& mesh, int max_x, int max_y, int max_z) {
+        .display_mesh = [this](const calc::mesh& mesh, const geo::point3<int> max) {
             CallAfter([=] {
                 // Make a copy of `mesh`, otherwise we encounter a data race
-                _viewport->set_mesh(mesh, { max_x / 2.0f, max_y / 2.0f, max_z / 2.0f });
+                _viewport->set_mesh(mesh, { max.x / 2.0f, max.y / 2.0f, max.z / 2.0f });
             });
         },
         .on_success = [this](calc::stack_result result, const std::chrono::system_clock::duration elapsed) {

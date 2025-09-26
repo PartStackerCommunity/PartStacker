@@ -24,6 +24,8 @@ struct stack_state {
     util::mdarray<Bool, 3> space;
     std::vector<std::shared_ptr<const part>> ordered_parts;
     stack_result result;
+    std::size_t total_parts;
+    std::size_t total_placed;
 };
 
 void place(const util::mdspan<Bool, 3> space, const int index, const util::mdspan<const int, 3> obj, const int x, const int y, const int z) {
@@ -100,6 +102,9 @@ std::size_t try_place(const stack_parameters& params, stack_state& state, const 
                             new_piece.translation += translation;
                             place(state.space, bit_index, state.voxels[part_index], x, y, z); // Mark voxels as occupied
                             ++placed;
+                            ++state.total_placed;
+                            params.set_progress(state.total_placed, state.total_parts);
+                            params.display_mesh(state.result.mesh, max);
                             if (to_place == placed) { // All instances of this part placed, move to next part
                                 return placed;
                             } else { // Move to next instance of part
@@ -125,10 +130,11 @@ std::optional<stack_result> stack_impl(const stack_parameters& params, const std
 
     double triangles = 0;
     const double scale_factor = 1 / params.resolution;
-    int total_parts = 0;
+    state.total_parts = 0;
+    state.total_placed = 0;
     for (const std::shared_ptr<const part> part : state.ordered_parts) {
         triangles += part->triangle_count * rotation_sets[part->rotation_index].size();
-        total_parts += part->quantity;
+        state.total_parts += part->quantity;
     }
 
     double progress = 0;
@@ -232,7 +238,6 @@ std::optional<stack_result> stack_impl(const stack_parameters& params, const std
 
     params.set_progress(0, 1);
 
-    std::size_t total_placed = 0;
     for (std::size_t part_index = 0; part_index != state.ordered_parts.size(); ++part_index) {
         std::size_t to_place = state.ordered_parts[part_index]->quantity;
         while (to_place > 0) {
@@ -241,9 +246,6 @@ std::optional<stack_result> stack_impl(const stack_parameters& params, const std
             }
             const std::size_t placed = try_place(params, state, part_index, to_place, { max_x, max_y, max_z });
             to_place -= placed;
-            total_placed += placed;
-            params.set_progress(total_placed, total_parts);
-            params.display_mesh(state.result.mesh, max_x, max_y, max_z);
 
             // If we have not placed a part, it means there are no more ways to place an instance of the current part in the box: it must be enlarged
             if (placed == 0) {
