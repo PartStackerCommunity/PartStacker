@@ -86,8 +86,10 @@ void main_window::on_select_parts(const std::vector<std::size_t>& indices) {
     }
     if (quantity.has_value()) {
         _controls.quantity_spinner->SetValue(*quantity);
+        _controls.quantity_spinner_last_value.emplace(*quantity);
     } else {
         _controls.quantity_spinner->SetValue("");
+        _controls.quantity_spinner_last_value.reset();
     }
     if (min_hole.has_value()) {
         _controls.min_hole_spinner->SetValue(*min_hole);
@@ -425,9 +427,13 @@ void main_window::bind_all_controls() {
     _controls.sinterbox_result_button->Bind(wxEVT_BUTTON, &main_window::on_sinterbox_result, this);
 
     _controls.quantity_spinner->Bind(wxEVT_SPINCTRL, [this](wxSpinEvent& event) {
-        for (auto& current_part : _current_parts) {
-            current_part.part->quantity = event.GetPosition();
-            _parts_list.reload_quantity(current_part.index);
+        if (not _controls.quantity_spinner_last_value.has_value() and event.GetPosition() == 0) {
+            _controls.quantity_spinner->SetValue("");
+        } else {
+            for (auto& current_part : _current_parts) {
+                current_part.part->quantity = event.GetPosition();
+                _parts_list.reload_quantity(current_part.index);
+            }
         }
         event.Skip();
     });
