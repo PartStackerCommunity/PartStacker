@@ -30,7 +30,7 @@ struct stack_parameters {
     std::vector<std::shared_ptr<const part>> parts;
 
     std::function<void(double, double)> set_progress;
-    std::function<void(const mesh&, int, int, int)> display_mesh;
+    std::function<void(const mesh&, const geo::point3<int>)> display_mesh;
     std::function<void(stack_result, std::chrono::system_clock::duration)> on_success;
     std::function<void()> on_failure;
     std::function<void()> on_finish;
