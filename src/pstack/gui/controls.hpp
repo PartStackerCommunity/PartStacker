@@ -45,6 +45,7 @@ struct controls {
     wxStaticText* min_hole_text;
     wxStaticText* minimize_text;
     wxSpinCtrl* quantity_spinner;
+    std::optional<int> quantity_spinner_last_value{ 1 };
     wxSpinCtrl* min_hole_spinner;
     wxCheckBox* minimize_checkbox;
     wxStaticText* rotation_text;
