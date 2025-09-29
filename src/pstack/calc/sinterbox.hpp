@@ -7,10 +7,10 @@
 namespace pstack::calc {
 
 struct sinterbox_settings {
-    double clearance;
-    double thickness;
-    double width;
-    double spacing;
+    double clearance = 0.8;
+    double thickness = 0.8;
+    double width = 1.1;
+    double spacing = 6.0;
 };
 
 struct sinterbox_bounding {

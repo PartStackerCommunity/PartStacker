@@ -27,10 +27,13 @@ struct stack_result {
 };
 
 struct stack_settings {
-    double resolution;
-    int x_min, x_max;
-    int y_min, y_max;
-    int z_min, z_max;
+    double resolution = 1.0;
+    int x_min = 150;
+    int x_max = 156;
+    int y_min = 150;
+    int y_max = 156;
+    int z_min = 30;
+    int z_max = 90;
 };
 
 struct stack_parameters {
