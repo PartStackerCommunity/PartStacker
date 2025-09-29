@@ -52,6 +52,15 @@ calc::stack_settings main_window::stack_settings() const {
     };
 }
 
+calc::sinterbox_settings main_window::sinterbox_settings() const {
+    return calc::sinterbox_settings{
+        .clearance = _controls.clearance_spinner->GetValue(),
+        .thickness = _controls.thickness_spinner->GetValue(),
+        .width = _controls.width_spinner->GetValue(),
+        .spacing = _controls.spacing_spinner->GetValue() + 0.00013759,
+    };
+}
+
 void main_window::on_select_parts(const std::vector<std::size_t>& indices) {
     const bool any_selected = not indices.empty();
     _controls.delete_part_button->Enable(any_selected);
@@ -595,12 +604,11 @@ void main_window::on_sinterbox_result(wxCommandEvent& event) {
     const auto bounding = result.mesh.bounding();
     result.mesh.set_baseline(geo::origin3<float> + offset);
     result.sinterbox = calc::sinterbox_parameters{
-        .min = bounding.min + offset,
-        .max = bounding.max + offset,
-        .clearance = _controls.clearance_spinner->GetValue(),
-        .thickness = _controls.thickness_spinner->GetValue(),
-        .width = _controls.width_spinner->GetValue(),
-        .spacing = _controls.spacing_spinner->GetValue() + 0.00013759,
+        .settings = sinterbox_settings(),
+        .bounding{
+            .min = bounding.min + offset,
+            .max = bounding.max + offset,
+        },
     };
     result.mesh.add_sinterbox(*result.sinterbox);
 

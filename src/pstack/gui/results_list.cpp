@@ -24,7 +24,7 @@ void results_list::append(calc::stack_result input) {
         wxString::Format("%.1fx%.1fx%.1f", result.size.x, result.size.y, result.size.z),
         std::to_string(result.mesh.triangles().size()),
         (not result.sinterbox.has_value()) ? wxString("none")
-            : wxString::Format("%.1f,%.1f,%.1f,%.1f", result.sinterbox->clearance, result.sinterbox->spacing, result.sinterbox->thickness, result.sinterbox->width),
+            : wxString::Format("%.1f,%.1f,%.1f,%.1f", result.sinterbox->settings.clearance, result.sinterbox->settings.spacing, result.sinterbox->settings.thickness, result.sinterbox->settings.width),
     });
 }
 

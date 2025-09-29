@@ -54,7 +54,8 @@ void append_side(std::vector<geo::triangle>& triangles, const util::mdspan<const
 }
 
 std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> make_positions(const sinterbox_parameters& params) {
-    const auto [min, max, clearance, thickness, width, desired_spacing] = params;
+    const auto [clearance, thickness, width, desired_spacing] = params.settings;
+    const auto [min, max] = params.bounding;
     const geo::vector3 size = max - min;
 
     // Number of bars in the given direction
@@ -111,8 +112,8 @@ void append_sinterbox(std::vector<geo::triangle>& triangles, const sinterbox_par
                 upper_xy[x, y] = { positions_x[x], positions_y[y], upper_bound.z };
             }
         }
-        append_side(triangles, lower_xy, geo::unit_z<float>, geo::unit_x<float>, geo::unit_y<float>, params.thickness);
-        append_side(triangles, upper_xy, -geo::unit_z<float>, geo::unit_x<float>, geo::unit_y<float>, params.thickness);
+        append_side(triangles, lower_xy, geo::unit_z<float>, geo::unit_x<float>, geo::unit_y<float>, params.settings.thickness);
+        append_side(triangles, upper_xy, -geo::unit_z<float>, geo::unit_x<float>, geo::unit_y<float>, params.settings.thickness);
     }
 
     // ZX sides
@@ -126,8 +127,8 @@ void append_sinterbox(std::vector<geo::triangle>& triangles, const sinterbox_par
                 upper_zx[z, x] = { positions_x[x], upper_bound.y, positions_z[z] };
             }
         }
-        append_side(triangles, lower_zx, geo::unit_y<float>, geo::unit_z<float>, geo::unit_x<float>, params.thickness);
-        append_side(triangles, upper_zx, -geo::unit_y<float>, geo::unit_z<float>, geo::unit_x<float>, params.thickness);
+        append_side(triangles, lower_zx, geo::unit_y<float>, geo::unit_z<float>, geo::unit_x<float>, params.settings.thickness);
+        append_side(triangles, upper_zx, -geo::unit_y<float>, geo::unit_z<float>, geo::unit_x<float>, params.settings.thickness);
     }
 
     // YZ sides
@@ -140,8 +141,8 @@ void append_sinterbox(std::vector<geo::triangle>& triangles, const sinterbox_par
                 upper_yz[y, z] = { upper_bound.x, positions_y[y], positions_z[z] };
             }
         }
-        append_side(triangles, lower_yz, geo::unit_x<float>, geo::unit_y<float>, geo::unit_z<float>, params.thickness);
-        append_side(triangles, upper_yz, -geo::unit_x<float>, geo::unit_y<float>, geo::unit_z<float>, params.thickness);
+        append_side(triangles, lower_yz, geo::unit_x<float>, geo::unit_y<float>, geo::unit_z<float>, params.settings.thickness);
+        append_side(triangles, upper_yz, -geo::unit_x<float>, geo::unit_y<float>, geo::unit_z<float>, params.settings.thickness);
     }
 }
 
