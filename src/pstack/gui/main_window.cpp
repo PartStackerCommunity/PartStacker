@@ -43,6 +43,15 @@ main_window::main_window(const wxString& title)
     SetSizerAndFit(sizer);
 }
 
+calc::stack_settings main_window::stack_settings() const {
+    return calc::stack_settings{
+        .resolution = _controls.min_clearance_spinner->GetValue(),
+        .x_min = _controls.initial_x_spinner->GetValue(), .x_max = _controls.maximum_x_spinner->GetValue(),
+        .y_min = _controls.initial_y_spinner->GetValue(), .y_max = _controls.maximum_y_spinner->GetValue(),
+        .z_min = _controls.initial_z_spinner->GetValue(), .z_max = _controls.maximum_z_spinner->GetValue(),
+    };
+}
+
 void main_window::on_select_parts(const std::vector<std::size_t>& indices) {
     const bool any_selected = not indices.empty();
     _controls.delete_part_button->Enable(any_selected);
@@ -186,6 +195,7 @@ void main_window::on_stacking_start() {
 
     calc::stack_parameters params {
         .parts = _parts_list.get_all(),
+        .settings = stack_settings(),
 
         .set_progress = [this](double progress, double total) {
             CallAfter([=] {
@@ -214,11 +224,6 @@ void main_window::on_stacking_start() {
                 enable_on_stacking(false);
             });
         },
-
-        .resolution = _controls.min_clearance_spinner->GetValue(),
-        .x_min = _controls.initial_x_spinner->GetValue(), .x_max = _controls.maximum_x_spinner->GetValue(),
-        .y_min = _controls.initial_y_spinner->GetValue(), .y_max = _controls.maximum_y_spinner->GetValue(),
-        .z_min = _controls.initial_z_spinner->GetValue(), .z_max = _controls.maximum_z_spinner->GetValue(),
     };
     enable_on_stacking(true);
     _stacker_thread.start(std::move(params));

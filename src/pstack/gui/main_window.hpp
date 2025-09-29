@@ -11,6 +11,7 @@
 #include <optional>
 #include <vector>
 #include "pstack/calc/stacker_thread.hpp"
+#include "pstack/calc/stacker.hpp"
 #include "pstack/gui/controls.hpp"
 #include "pstack/gui/parts_list.hpp"
 #include "pstack/gui/preferences.hpp"
@@ -28,6 +29,7 @@ private:
     viewport* _viewport = nullptr;
     controls _controls;
     preferences _preferences;
+    calc::stack_settings stack_settings() const;
 
     void on_select_parts(const std::vector<std::size_t>& indices);
     parts_list _parts_list{};

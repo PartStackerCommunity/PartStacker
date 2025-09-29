@@ -26,19 +26,22 @@ struct stack_result {
     std::optional<sinterbox_parameters> sinterbox{};
 };
 
+struct stack_settings {
+    double resolution;
+    int x_min, x_max;
+    int y_min, y_max;
+    int z_min, z_max;
+};
+
 struct stack_parameters {
     std::vector<std::shared_ptr<const part>> parts;
+    stack_settings settings;
 
     std::function<void(double, double)> set_progress;
     std::function<void(const mesh&, const geo::point3<int>)> display_mesh;
     std::function<void(stack_result, std::chrono::system_clock::duration)> on_success;
     std::function<void()> on_failure;
     std::function<void()> on_finish;
-
-    double resolution;
-    int x_min, x_max;
-    int y_min, y_max;
-    int z_min, z_max;
 };
 
 class stacker {
