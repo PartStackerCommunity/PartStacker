@@ -10,10 +10,11 @@
 namespace pstack::files {
 
 calc::mesh from_stl(const std::string& file_path) {
-    std::string file = read_file(file_path);
-    if (file.empty()) {
+    auto file_expected = read_file(file_path);
+    if (not file_expected.has_value()) {
         return {};
     }
+    std::string& file = *file_expected;
     const std::size_t file_size = file.size();
     std::istringstream ss(std::move(file));
 
