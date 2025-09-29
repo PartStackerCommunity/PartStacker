@@ -57,7 +57,7 @@ calc::sinterbox_settings main_window::sinterbox_settings() const {
         .clearance = _controls.clearance_spinner->GetValue(),
         .thickness = _controls.thickness_spinner->GetValue(),
         .width = _controls.width_spinner->GetValue(),
-        .spacing = _controls.spacing_spinner->GetValue() + 0.00013759,
+        .spacing = _controls.spacing_spinner->GetValue(),
     };
 }
 
