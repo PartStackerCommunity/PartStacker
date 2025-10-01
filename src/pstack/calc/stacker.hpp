@@ -12,18 +12,23 @@
 
 namespace pstack::calc {
 
-struct stack_result {
+// `stack_result_base` is the base level information about the result
+template <class Part, class Sinterbox>
+struct stack_result_base {
     struct piece {
-        std::shared_ptr<const part> part;
+        Part part;
         geo::matrix3<float> rotation;
         geo::vector3<float> translation;
     };
     std::vector<piece> pieces{};
+    std::optional<Sinterbox> sinterbox{};
+};
 
+// `stack_result` is everything that can be calculated/derived from the `stack_result_base`
+struct stack_result : stack_result_base<std::shared_ptr<const part>, sinterbox_parameters> {
     mesh mesh{};
     geo::vector3<float> size{};
     double density{};
-    std::optional<sinterbox_parameters> sinterbox{};
 };
 
 struct stack_settings {
