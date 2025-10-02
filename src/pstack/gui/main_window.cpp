@@ -7,6 +7,7 @@
 #include "pstack/gui/viewport.hpp"
 
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <wx/colourdata.h>
 #include <wx/filedlg.h>
@@ -44,6 +45,7 @@ main_window::main_window(const wxString& title)
     sizer->Add(_viewport, 1, wxEXPAND);
     sizer->Add(arrange_all_controls(), 0, wxEXPAND | wxALL, FromDIP(constants::outer_border));
     SetSizerAndFit(sizer);
+    try_load_environment();
 }
 
 calc::stack_settings main_window::stack_settings() const {
@@ -418,6 +420,51 @@ wxMenuBar* main_window::make_menu_bar() {
     return menu_bar;
 }
 
+void main_window::try_load_environment() {
+    auto dir = std::filesystem::current_path();
+    while (true) {
+        auto file = dir / ".pstack.json";
+        if (std::filesystem::exists(file) and std::filesystem::is_regular_file(file)) {
+            if (load_project(file.string())) {
+                wxMessageBox(wxString::Format("Loaded environment from: %s", file.string()), "PartStacker environment", wxICON_INFORMATION);
+            }
+            break;
+        }
+        auto parent_dir = dir.parent_path();
+        if (parent_dir == dir) {
+            break;
+        }
+        dir = std::move(parent_dir);
+    }
+}
+
+bool main_window::load_project(const std::string json_path) {
+    auto file = files::read_file(json_path);
+    if (not file.has_value()) {
+        wxMessageBox(wxString::Format("Could not open path: %s\n\n%s", json_path, file.error()), "Error", wxICON_WARNING);
+        return false;
+    }
+
+    auto state = save_state_from_json(*file);
+    if (not state.has_value()) {
+        wxMessageBox(wxString::Format("Could not read project file: %s\n\n%s", json_path, state.error()), "Error", wxICON_WARNING);
+        return false;
+    }
+
+    _preferences = state->preferences;
+    _viewport->scroll_direction(_preferences.invert_scroll);
+    _parts_list.show_extra(_preferences.extra_parts);
+    _viewport->show_bounding_box(_preferences.show_bounding_box);
+    stack_settings(state->stack);
+    sinterbox_settings(state->sinterbox);
+    _parts_list.replace_all(std::move(state->parts));
+    for (auto& result : state->results) {
+        result.reload_mesh();
+    }
+    _results_list.replace_all(std::move(state->results));
+    return true;
+}
+
 void main_window::bind_all_controls() {
     Bind(wxEVT_CLOSE_WINDOW, &main_window::on_close, this);
 
@@ -510,6 +557,7 @@ void main_window::on_new(wxCommandEvent& event) {
         _results_list.delete_all();
         unset_result();
         _viewport->remove_mesh();
+        try_load_environment();
     }
     event.Skip();
 }
@@ -542,29 +590,7 @@ void main_window::on_open(wxCommandEvent& event) {
             return;
         }
 
-        auto file = files::read_file(dialog.GetPath().ToStdString());
-        if (not file.has_value()) {
-            wxMessageBox(wxString::Format("Could not open path: %s\n\n%s", dialog.GetPath(), file.error()), "Error", wxICON_WARNING);
-            return;
-        }
-
-        auto state = save_state_from_json(*file);
-        if (not state.has_value()) {
-            wxMessageBox(wxString::Format("Could not read project file: %s\n\n%s", dialog.GetPath(), state.error()), "Error", wxICON_WARNING);
-            return;
-        }
-
-        _preferences = state->preferences;
-        _viewport->scroll_direction(_preferences.invert_scroll);
-        _parts_list.show_extra(_preferences.extra_parts);
-        _viewport->show_bounding_box(_preferences.show_bounding_box);
-        stack_settings(state->stack);
-        sinterbox_settings(state->sinterbox);
-        _parts_list.replace_all(std::move(state->parts));
-        for (auto& result : state->results) {
-            result.reload_mesh();
-        }
-        _results_list.replace_all(std::move(state->results));
+        load_project(dialog.GetPath().ToStdString());
     }
     event.Skip();
 }
