@@ -526,7 +526,7 @@ void main_window::on_save(wxCommandEvent& event) {
         wxMessageBox(wxString::Format("Could not open path: %s", path), "Error", wxICON_WARNING);
         return;
     }
-    file << save_state_to_json(save_state{
+    file << save_state_to_json(out_save_state{
         .pref = _preferences,
         .stack = stack_settings(),
         .sinterbox = sinterbox_settings(),

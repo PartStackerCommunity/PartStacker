@@ -21,13 +21,20 @@ struct basic_save_state {
     std::vector<ResultType> results;
 };
 
-using save_state = basic_save_state<
+using out_save_state = basic_save_state<
     std::shared_ptr<const calc::part>,
     calc::stack_result
 >;
 
-std::expected<save_state, std::string> save_state_from_json(std::string_view str);
-std::string save_state_to_json(const save_state& state);
+struct in_save_state : basic_save_state<
+    std::shared_ptr<calc::part>,
+    calc::stack_result
+> {
+    std::vector<std::shared_ptr<calc::part>> extra_parts;
+};
+
+std::expected<in_save_state, std::string> save_state_from_json(std::string_view str);
+std::string save_state_to_json(const out_save_state& state);
 
 } // namespace pstack::gui
 

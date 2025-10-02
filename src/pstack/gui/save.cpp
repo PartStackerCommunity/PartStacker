@@ -186,7 +186,7 @@ namespace pstack::gui {
 
 namespace {
 
-internal_save_state to_internal(const save_state& state) {
+internal_save_state to_internal(const out_save_state& state) {
     std::vector all_parts = state.parts; // Copy
 
     std::vector<save_result> results{};
@@ -229,11 +229,11 @@ internal_save_state to_internal(const save_state& state) {
 
 } // namespace
 
-std::expected<save_state, std::string> save_state_from_json(std::string_view str) {
+std::expected<in_save_state, std::string> save_state_from_json(std::string_view str) {
     return {};
 }
 
-std::string save_state_to_json(const save_state& state) {
+std::string save_state_to_json(const out_save_state& state) {
     return jsoncons::json(to_internal(state)).to_string();
 }
 
