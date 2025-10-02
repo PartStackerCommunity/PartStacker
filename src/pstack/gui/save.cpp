@@ -113,7 +113,7 @@ std::expected<save_state, std::string> save_state_from_json(std::string_view str
 }
 
 std::string save_state_to_json(const save_state& state) {
-    return {};
+    return jsoncons::json(to_internal(state)).to_string();
 }
 
 } // namespace pstack::gui

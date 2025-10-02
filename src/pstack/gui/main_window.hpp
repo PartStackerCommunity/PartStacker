@@ -62,6 +62,7 @@ private:
     void bind_all_controls();
     void on_new(wxCommandEvent& event);
     void on_close(wxCloseEvent& event);
+    void on_save(wxCommandEvent& event);
     void on_import_part(wxCommandEvent& event);
     void on_delete_part(wxCommandEvent& event);
     void on_reload_part(wxCommandEvent& event);

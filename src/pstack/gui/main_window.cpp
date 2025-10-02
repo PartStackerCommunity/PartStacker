@@ -2,9 +2,11 @@
 #include "pstack/gui/constants.hpp"
 #include "pstack/gui/main_window.hpp"
 #include "pstack/gui/parts_list.hpp"
+#include "pstack/gui/save.hpp"
 #include "pstack/gui/viewport.hpp"
 
 #include <cstdlib>
+#include <fstream>
 #include <wx/colourdata.h>
 #include <wx/filedlg.h>
 #include <wx/gbsizer.h>
@@ -323,8 +325,7 @@ wxMenuBar* main_window::make_menu_bar() {
                 break;
             }
             case menu_item::save: {
-                wxMessageBox("Not yet implemented", "Error", wxICON_WARNING);
-                break;
+                return on_save(event);
             }
             case menu_item::close: {
                 Close();
@@ -507,6 +508,31 @@ void main_window::on_close(wxCloseEvent& event) {
         }
     }
     _stacker_thread.stop();
+    event.Skip();
+}
+
+void main_window::on_save(wxCommandEvent& event) {
+    wxFileDialog dialog(this, "Save project", "", "",
+                        "PartStacker project files (*.pstack.json)|*.pstack.json",
+                        wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+
+    if (dialog.ShowModal() == wxID_CANCEL) {
+        return;
+    }
+
+    const std::string path = dialog.GetPath().ToStdString();
+    std::ofstream file(path);
+    if (not file.is_open()) {
+        wxMessageBox(wxString::Format("Could not open path: %s", path), "Error", wxICON_WARNING);
+        return;
+    }
+    file << save_state_to_json(save_state{
+        .pref = _preferences,
+        .stack = stack_settings(),
+        .sinterbox = sinterbox_settings(),
+        .parts = _parts_list.get_all(),
+        .results = _results_list.get_all(),
+    });
     event.Skip();
 }
 
