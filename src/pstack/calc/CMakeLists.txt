@@ -1,5 +1,6 @@
 add_library(pstack_calc STATIC
     mesh.cpp
+    part.cpp
     rotations.cpp
     sinterbox.cpp
     stacker.cpp
@@ -20,6 +21,6 @@ set_target_properties(pstack_calc PROPERTIES
     PROJECT_LABEL "calc"
 )
 target_link_libraries(pstack_calc
-    PUBLIC pstack_geo pstack_util
+    PUBLIC pstack_files pstack_geo pstack_util
 )
 target_include_directories(pstack_calc PUBLIC "${PROJECT_SOURCE_DIR}/src")

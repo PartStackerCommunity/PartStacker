@@ -1,10 +1,13 @@
+#include "pstack/files/read.hpp"
 #include "pstack/files/stl.hpp"
 #include "pstack/gui/constants.hpp"
 #include "pstack/gui/main_window.hpp"
 #include "pstack/gui/parts_list.hpp"
+#include "pstack/gui/save.hpp"
 #include "pstack/gui/viewport.hpp"
 
 #include <cstdlib>
+#include <fstream>
 #include <wx/colourdata.h>
 #include <wx/filedlg.h>
 #include <wx/gbsizer.h>
@@ -41,6 +44,41 @@ main_window::main_window(const wxString& title)
     sizer->Add(_viewport, 1, wxEXPAND);
     sizer->Add(arrange_all_controls(), 0, wxEXPAND | wxALL, FromDIP(constants::outer_border));
     SetSizerAndFit(sizer);
+}
+
+calc::stack_settings main_window::stack_settings() const {
+    return calc::stack_settings{
+        .resolution = _controls.min_clearance_spinner->GetValue(),
+        .x_min = _controls.initial_x_spinner->GetValue(), .x_max = _controls.maximum_x_spinner->GetValue(),
+        .y_min = _controls.initial_y_spinner->GetValue(), .y_max = _controls.maximum_y_spinner->GetValue(),
+        .z_min = _controls.initial_z_spinner->GetValue(), .z_max = _controls.maximum_z_spinner->GetValue(),
+    };
+}
+
+void main_window::stack_settings(const calc::stack_settings& settings) {
+    _controls.min_clearance_spinner->SetValue(settings.resolution);
+    _controls.initial_x_spinner->SetValue(settings.x_min);
+    _controls.maximum_x_spinner->SetValue(settings.x_max);
+    _controls.initial_y_spinner->SetValue(settings.y_min);
+    _controls.maximum_y_spinner->SetValue(settings.y_max);
+    _controls.initial_z_spinner->SetValue(settings.z_min);
+    _controls.maximum_z_spinner->SetValue(settings.z_max);
+}
+
+calc::sinterbox_settings main_window::sinterbox_settings() const {
+    return calc::sinterbox_settings{
+        .clearance = _controls.clearance_spinner->GetValue(),
+        .thickness = _controls.thickness_spinner->GetValue(),
+        .width = _controls.width_spinner->GetValue(),
+        .spacing = _controls.spacing_spinner->GetValue(),
+    };
+}
+
+void main_window::sinterbox_settings(const calc::sinterbox_settings& settings) {
+    _controls.clearance_spinner->SetValue(settings.clearance);
+    _controls.thickness_spinner->SetValue(settings.thickness);
+    _controls.width_spinner->SetValue(settings.width);
+    _controls.spacing_spinner->SetValue(settings.spacing);
 }
 
 void main_window::on_select_parts(const std::vector<std::size_t>& indices) {
@@ -186,6 +224,7 @@ void main_window::on_stacking_start() {
 
     calc::stack_parameters params {
         .parts = _parts_list.get_all(),
+        .settings = stack_settings(),
 
         .set_progress = [this](double progress, double total) {
             CallAfter([=] {
@@ -214,11 +253,6 @@ void main_window::on_stacking_start() {
                 enable_on_stacking(false);
             });
         },
-
-        .resolution = _controls.min_clearance_spinner->GetValue(),
-        .x_min = _controls.initial_x_spinner->GetValue(), .x_max = _controls.maximum_x_spinner->GetValue(),
-        .y_min = _controls.initial_y_spinner->GetValue(), .y_max = _controls.maximum_y_spinner->GetValue(),
-        .z_min = _controls.initial_z_spinner->GetValue(), .z_max = _controls.maximum_z_spinner->GetValue(),
     };
     enable_on_stacking(true);
     _stacker_thread.start(std::move(params));
@@ -305,12 +339,10 @@ wxMenuBar* main_window::make_menu_bar() {
                 return on_new(event);
             }
             case menu_item::open: {
-                wxMessageBox("Not yet implemented", "Error", wxICON_WARNING);
-                break;
+                return on_open(event);
             }
             case menu_item::save: {
-                wxMessageBox("Not yet implemented", "Error", wxICON_WARNING);
-                break;
+                return on_save(event);
             }
             case menu_item::close: {
                 Close();
@@ -467,7 +499,7 @@ void main_window::bind_all_controls() {
 }
 
 void main_window::on_new(wxCommandEvent& event) {
-    if (_parts_list.rows() == 0 or
+    if ((_parts_list.rows() == 0 and _results_list.rows() == 0) or
         wxMessageBox("Clear the current working session?",
                      "Warning",
                      wxYES_NO | wxNO_DEFAULT | wxICON_INFORMATION) == wxYES)
@@ -493,6 +525,72 @@ void main_window::on_close(wxCloseEvent& event) {
         }
     }
     _stacker_thread.stop();
+    event.Skip();
+}
+
+void main_window::on_open(wxCommandEvent& event) {
+    if ((_parts_list.rows() == 0 and _results_list.rows() == 0) or
+        wxMessageBox("Clear the current working session?",
+                     "Warning",
+                     wxYES_NO | wxNO_DEFAULT | wxICON_INFORMATION) == wxYES)
+    {
+        wxFileDialog dialog(this, "Open project", "", "",
+                            "PartStacker project files (*.pstack.json)|*.pstack.json",
+                            wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+
+        if (dialog.ShowModal() == wxID_CANCEL) {
+            return;
+        }
+
+        auto file = files::read_file(dialog.GetPath().ToStdString());
+        if (not file.has_value()) {
+            wxMessageBox(wxString::Format("Could not open path: %s\n\n%s", dialog.GetPath(), file.error()), "Error", wxICON_WARNING);
+            return;
+        }
+
+        auto state = save_state_from_json(*file);
+        if (not state.has_value()) {
+            wxMessageBox(wxString::Format("Could not read project file: %s\n\n%s", dialog.GetPath(), state.error()), "Error", wxICON_WARNING);
+            return;
+        }
+
+        _preferences = state->preferences;
+        _viewport->scroll_direction(_preferences.invert_scroll);
+        _parts_list.show_extra(_preferences.extra_parts);
+        _viewport->show_bounding_box(_preferences.show_bounding_box);
+        stack_settings(state->stack);
+        sinterbox_settings(state->sinterbox);
+        _parts_list.replace_all(std::move(state->parts));
+        for (auto& result : state->results) {
+            result.reload_mesh();
+        }
+        _results_list.replace_all(std::move(state->results));
+    }
+    event.Skip();
+}
+
+void main_window::on_save(wxCommandEvent& event) {
+    wxFileDialog dialog(this, "Save project", "", "",
+                        "PartStacker project files (*.pstack.json)|*.pstack.json",
+                        wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+
+    if (dialog.ShowModal() == wxID_CANCEL) {
+        return;
+    }
+
+    const std::string path = dialog.GetPath().ToStdString();
+    std::ofstream file(path);
+    if (not file.is_open()) {
+        wxMessageBox(wxString::Format("Could not open path: %s", path), "Error", wxICON_WARNING);
+        return;
+    }
+    file << save_state_to_json(out_save_state{
+        .preferences = _preferences,
+        .stack = stack_settings(),
+        .sinterbox = sinterbox_settings(),
+        .parts = _parts_list.get_all(),
+        .results = _results_list.get_all(),
+    });
     event.Skip();
 }
 
@@ -590,12 +688,11 @@ void main_window::on_sinterbox_result(wxCommandEvent& event) {
     const auto bounding = result.mesh.bounding();
     result.mesh.set_baseline(geo::origin3<float> + offset);
     result.sinterbox = calc::sinterbox_parameters{
-        .min = bounding.min + offset,
-        .max = bounding.max + offset,
-        .clearance = _controls.clearance_spinner->GetValue(),
-        .thickness = _controls.thickness_spinner->GetValue(),
-        .width = _controls.width_spinner->GetValue(),
-        .spacing = _controls.spacing_spinner->GetValue() + 0.00013759,
+        .settings = sinterbox_settings(),
+        .bounding{
+            .min = bounding.min + offset,
+            .max = bounding.max + offset,
+        },
     };
     result.mesh.add_sinterbox(*result.sinterbox);
 

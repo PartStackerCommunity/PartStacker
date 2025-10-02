@@ -11,6 +11,7 @@
 #include <optional>
 #include <vector>
 #include "pstack/calc/stacker_thread.hpp"
+#include "pstack/calc/stacker.hpp"
 #include "pstack/gui/controls.hpp"
 #include "pstack/gui/parts_list.hpp"
 #include "pstack/gui/preferences.hpp"
@@ -28,6 +29,10 @@ private:
     viewport* _viewport = nullptr;
     controls _controls;
     preferences _preferences;
+    calc::stack_settings stack_settings() const;
+    void stack_settings(const calc::stack_settings&);
+    calc::sinterbox_settings sinterbox_settings() const;
+    void sinterbox_settings(const calc::sinterbox_settings&);
 
     void on_select_parts(const std::vector<std::size_t>& indices);
     parts_list _parts_list{};
@@ -59,6 +64,8 @@ private:
     void bind_all_controls();
     void on_new(wxCommandEvent& event);
     void on_close(wxCloseEvent& event);
+    void on_open(wxCommandEvent& event);
+    void on_save(wxCommandEvent& event);
     void on_import_part(wxCommandEvent& event);
     void on_delete_part(wxCommandEvent& event);
     void on_reload_part(wxCommandEvent& event);

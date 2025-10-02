@@ -202,24 +202,25 @@ void controls::initialize(main_window* parent) {
 }
 
 void controls::reset_values() {
-    min_clearance_spinner->SetValue(1);
-
     quantity_spinner->SetValue(1);
     min_hole_spinner->SetValue(1);
     minimize_checkbox->SetValue(false);
     rotation_dropdown->SetSelection(1);
 
-    clearance_spinner->SetValue(0.8);
-    spacing_spinner->SetValue(6.0);
-    thickness_spinner->SetValue(0.8);
-    width_spinner->SetValue(1.1);
+    calc::sinterbox_settings sinterbox{}; // Get the defaults
+    clearance_spinner->SetValue(sinterbox.clearance);
+    spacing_spinner->SetValue(sinterbox.spacing);
+    thickness_spinner->SetValue(sinterbox.thickness);
+    width_spinner->SetValue(sinterbox.width);
 
-    initial_x_spinner->SetValue(150);
-    initial_y_spinner->SetValue(150);
-    initial_z_spinner->SetValue(30);
-    maximum_x_spinner->SetValue(156);
-    maximum_y_spinner->SetValue(156);
-    maximum_z_spinner->SetValue(90);
+    calc::stack_settings stack{}; // Get the defaults
+    min_clearance_spinner->SetValue(stack.resolution);
+    initial_x_spinner->SetValue(stack.x_min);
+    initial_y_spinner->SetValue(stack.y_min);
+    initial_z_spinner->SetValue(stack.z_min);
+    maximum_x_spinner->SetValue(stack.x_max);
+    maximum_y_spinner->SetValue(stack.y_max);
+    maximum_z_spinner->SetValue(stack.z_max);
 }
 
 } // namespace pstack::gui

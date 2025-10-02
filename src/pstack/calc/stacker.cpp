@@ -10,6 +10,15 @@
 
 namespace pstack::calc {
 
+void stack_result::reload_mesh() {
+    this->mesh = {};
+    for (const auto& piece : pieces) {
+        auto m = piece.part->mesh;
+        m.rotate(piece.rotation);
+        this->mesh.add(m, piece.translation);
+    }
+}
+
 namespace {
 
 struct stack_state {
@@ -129,7 +138,7 @@ std::optional<stack_result> stack_impl(const stack_parameters& params, const std
     state.voxels.assign(state.ordered_parts.size(), {});
 
     double triangles = 0;
-    const double scale_factor = 1 / params.resolution;
+    const double scale_factor = 1 / params.settings.resolution;
     state.total_parts = 0;
     state.total_placed = 0;
     for (const std::shared_ptr<const part> part : state.ordered_parts) {
@@ -227,13 +236,13 @@ std::optional<stack_result> stack_impl(const stack_parameters& params, const std
         }
     }
 
-    int max_x = static_cast<int>(scale_factor * params.x_min);
-    int max_y = static_cast<int>(scale_factor * params.y_min);
-    int max_z = static_cast<int>(scale_factor * params.z_min);
+    int max_x = static_cast<int>(scale_factor * params.settings.x_min);
+    int max_y = static_cast<int>(scale_factor * params.settings.y_min);
+    int max_z = static_cast<int>(scale_factor * params.settings.z_min);
     state.space = {
-        std::max(max_x, static_cast<int>(scale_factor * params.x_max)),
-        std::max(max_y, static_cast<int>(scale_factor * params.y_max)),
-        std::max(max_z, static_cast<int>(scale_factor * params.z_max))
+        std::max(max_x, static_cast<int>(scale_factor * params.settings.x_max)),
+        std::max(max_y, static_cast<int>(scale_factor * params.settings.y_max)),
+        std::max(max_z, static_cast<int>(scale_factor * params.settings.z_max))
     };
 
     params.set_progress(0, 1);

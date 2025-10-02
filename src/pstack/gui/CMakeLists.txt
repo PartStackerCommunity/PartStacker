@@ -5,6 +5,7 @@ add_executable(pstack_gui WIN32
     main_window.cpp
     parts_list.cpp
     results_list.cpp
+    save.cpp
     viewport.cpp
 )
 target_sources(pstack_gui PUBLIC FILE_SET headers TYPE HEADERS FILES
@@ -15,6 +16,7 @@ target_sources(pstack_gui PUBLIC FILE_SET headers TYPE HEADERS FILES
     parts_list.hpp
     preferences.hpp
     results_list.hpp
+    save.hpp
     transformation.hpp
     viewport.hpp
 )
@@ -23,6 +25,7 @@ set_target_properties(pstack_gui PROPERTIES
     PROJECT_LABEL "gui"
 )
 target_link_libraries(pstack_gui PRIVATE
+    jsoncons
     wx::net
     wx::core
     wx::base
@@ -33,6 +36,10 @@ target_link_libraries(pstack_gui PRIVATE
     pstack_graphics
 )
 target_include_directories(pstack_gui PRIVATE "${PROJECT_SOURCE_DIR}/src")
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(pstack_gui PRIVATE "/bigobj")
+endif()
 
 set(PSTACK_OUTPUT_TYPE "GUI")
 set(PSTACK_OUTPUT_FILE_NAME "PartStackerGUI")
