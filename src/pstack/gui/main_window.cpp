@@ -561,6 +561,9 @@ void main_window::on_open(wxCommandEvent& event) {
         stack_settings(state->stack);
         sinterbox_settings(state->sinterbox);
         _parts_list.replace_all(std::move(state->parts));
+        for (auto& result : state->results) {
+            result.reload_mesh();
+        }
         _results_list.replace_all(std::move(state->results));
     }
     event.Skip();

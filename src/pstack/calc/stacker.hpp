@@ -29,6 +29,8 @@ struct stack_result : stack_result_base<std::shared_ptr<const part>, sinterbox_p
     mesh mesh{};
     geo::vector3<float> size{};
     double density{};
+
+    void reload_mesh();
 };
 
 struct stack_settings {

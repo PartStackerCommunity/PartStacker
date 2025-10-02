@@ -10,6 +10,15 @@
 
 namespace pstack::calc {
 
+void stack_result::reload_mesh() {
+    this->mesh = {};
+    for (const auto& piece : pieces) {
+        auto m = piece.part->mesh;
+        m.rotate(piece.rotation);
+        this->mesh.add(m, piece.translation);
+    }
+}
+
 namespace {
 
 struct stack_state {
