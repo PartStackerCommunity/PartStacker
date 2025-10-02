@@ -3,8 +3,8 @@ if(DEFINED PSTACK_VERSION_MAJOR OR DEFINED PSTACK_VERSION_MINOR OR DEFINED PSTAC
 endif()
 
 set(PSTACK_VERSION_MAJOR 0)
-set(PSTACK_VERSION_MINOR 3)
-set(PSTACK_VERSION_PATCH 2)
+set(PSTACK_VERSION_MINOR 4)
+set(PSTACK_VERSION_PATCH 0)
 
 macro(pstack_configure_file input output)
     configure_file("${PROJECT_SOURCE_DIR}/src/configure/${input}" "${CMAKE_CURRENT_BINARY_DIR}/pstack_generated/${output}")
