@@ -10,11 +10,11 @@ namespace pstack::calc {
 // `part_base` is the part data needed to save and load
 struct part_base {
     std::string mesh_file;
-    int quantity;
-    bool mirrored;
-    int min_hole;
-    int rotation_index;
-    bool rotate_min_box;
+    int quantity = 1;
+    bool mirrored = false;
+    int min_hole = 1;
+    int rotation_index = 1;
+    bool rotate_min_box = false;
 };
 
 // `part` is everything that can be derived from `part_base`
@@ -28,6 +28,8 @@ struct part : part_base {
     geo::point3<float> centroid;
     int triangle_count;
 };
+
+part initialize_part(part_base base);
 
 } // namespace pstack::calc
 

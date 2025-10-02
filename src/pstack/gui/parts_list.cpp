@@ -1,49 +1,16 @@
-#include "pstack/files/stl.hpp"
 #include "pstack/gui/parts_list.hpp"
 #include <wx/string.h>
-#include <charconv>
-#include <cmath>
-#include <filesystem>
 
 namespace pstack::gui {
 
 namespace {
 
 calc::part make_part(std::string mesh_file, bool mirrored) {
-    calc::part part;
-    part.mesh_file = std::move(mesh_file);
-    part.name = std::filesystem::path(part.mesh_file).stem().string();
-    part.mesh = files::from_stl(part.mesh_file);
-    part.mesh.set_baseline({ 0, 0, 0 });
-
-    part.base_quantity = [name = part.name]() mutable -> std::optional<int> {
-        char looking_for = '.';
-        if (name.ends_with(')')) {
-            name.pop_back();
-            looking_for = '(';
-        }
-        std::size_t number_length = 0;
-        while (name.size() > number_length and std::isdigit(name[name.size() - number_length - 1])) {
-            ++number_length;
-        }
-        if (number_length == 0 or not (name.size() > number_length and name[name.size() - number_length - 1] == looking_for)) {
-            return std::nullopt;
-        }
-        std::string_view number{ name.data() + (name.size() - number_length), name.data() + name.size() };
-        int out{-1};
-        std::from_chars(number.data(), number.data() + number.size(), out);
-        return out;
-    }();
+    calc::part_base base;
+    base.mesh_file = std::move(mesh_file);
+    base.mirrored = mirrored;
+    calc::part part = calc::initialize_part(std::move(base));
     part.quantity = part.base_quantity.value_or(1);
-
-    auto volume_and_centroid = part.mesh.volume_and_centroid();
-    part.volume = volume_and_centroid.volume;
-    part.centroid = volume_and_centroid.centroid;
-    part.triangle_count = part.mesh.triangles().size();
-    part.mirrored = mirrored;
-    part.min_hole = 1;
-    part.rotation_index = 1;
-    part.rotate_min_box = false;
     return part;
 }
 
