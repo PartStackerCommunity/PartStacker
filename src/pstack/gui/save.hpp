@@ -14,7 +14,7 @@ namespace pstack::gui {
 
 template <class PartType, class ResultType>
 struct basic_save_state {
-    preferences pref;
+    preferences preferences;
     calc::stack_settings stack;
     calc::sinterbox_settings sinterbox;
     std::vector<PartType> parts;

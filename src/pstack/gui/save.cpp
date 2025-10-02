@@ -59,7 +59,7 @@ JSONCONS_N_MEMBER_TRAITS(pstack::gui::save_result, 1,
 );
 
 JSONCONS_ALL_MEMBER_TRAITS(pstack::gui::internal_save_state,
-    pref, stack, sinterbox, parts, results
+    preferences, stack, sinterbox, parts, results
 );
 
 namespace {
@@ -189,7 +189,7 @@ namespace {
 
 in_save_state from_internal(const internal_save_state& state) {
 	in_save_state s{};
-	s.pref = state.pref;
+	s.preferences = state.preferences;
 	s.stack = state.stack;
 	s.sinterbox = state.sinterbox;
 
@@ -254,7 +254,7 @@ internal_save_state to_internal(const out_save_state& state) {
     }
 
     return internal_save_state{
-        .pref = state.pref,
+        .preferences = state.preferences,
         .stack = state.stack,
         .sinterbox = state.sinterbox,
         .parts = std::move(parts),

@@ -554,7 +554,7 @@ void main_window::on_open(wxCommandEvent& event) {
             return;
         }
 
-        _preferences = state->pref;
+        _preferences = state->preferences;
         _viewport->scroll_direction(_preferences.invert_scroll);
         _parts_list.show_extra(_preferences.extra_parts);
         _viewport->show_bounding_box(_preferences.show_bounding_box);
@@ -585,7 +585,7 @@ void main_window::on_save(wxCommandEvent& event) {
         return;
     }
     file << save_state_to_json(out_save_state{
-        .pref = _preferences,
+        .preferences = _preferences,
         .stack = stack_settings(),
         .sinterbox = sinterbox_settings(),
         .parts = _parts_list.get_all(),
