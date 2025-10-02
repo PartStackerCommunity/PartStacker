@@ -1,4 +1,5 @@
 #include "pstack/gui/save.hpp"
+#include <jsoncons/json.hpp>
 #include <cstddef>
 #include <expected>
 #include <string_view>
@@ -22,6 +23,43 @@ using internal_save_state = basic_save_state<save_part, save_result>;
 
 } // namespace
 } // namespace pstack::gui
+
+JSONCONS_N_MEMBER_TRAITS(pstack::gui::preferences, 0, // Nothing is required
+    invert_scroll, extra_parts, show_bounding_box
+);
+JSONCONS_N_MEMBER_TRAITS(pstack::calc::stack_settings, 0, // Nothing is required
+    resolution, x_min, x_max, y_min, y_max, z_min, z_max
+);
+JSONCONS_N_MEMBER_TRAITS(pstack::calc::sinterbox_settings, 0, // Nothing is required
+    clearance, thickness, width, spacing
+);
+JSONCONS_ALL_MEMBER_TRAITS(pstack::gui::save_part,
+    mesh_file, quantity, mirrored, min_hole, rotation_index, rotate_min_box, in_parts_list
+);
+
+JSONCONS_ALL_MEMBER_TRAITS(pstack::geo::point3<float>,
+    x, y, z
+);
+JSONCONS_ALL_MEMBER_TRAITS(pstack::geo::vector3<float>,
+    x, y, z
+);
+JSONCONS_ALL_MEMBER_TRAITS(pstack::geo::matrix3<float>,
+    xx, xy, xz, yx, yy, yz, zx, zy, zz
+);
+JSONCONS_ALL_MEMBER_TRAITS(pstack::gui::save_result::piece,
+    part, rotation, translation
+);
+JSONCONS_ALL_MEMBER_TRAITS(pstack::gui::save_sinterbox_parameters,
+    clearance, thickness, width, spacing, min, max
+);
+JSONCONS_N_MEMBER_TRAITS(pstack::gui::save_result, 1,
+    pieces,     // mandatory
+    sinterbox   // optional
+);
+
+JSONCONS_ALL_MEMBER_TRAITS(pstack::gui::internal_save_state,
+    pref, stack, sinterbox, parts, results
+);
 
 namespace pstack::gui {
 
