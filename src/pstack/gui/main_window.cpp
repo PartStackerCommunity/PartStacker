@@ -54,6 +54,16 @@ calc::stack_settings main_window::stack_settings() const {
     };
 }
 
+void main_window::stack_settings(const calc::stack_settings& settings) {
+    _controls.min_clearance_spinner->SetValue(settings.resolution);
+    _controls.initial_x_spinner->SetValue(settings.x_min);
+    _controls.maximum_x_spinner->SetValue(settings.x_max);
+    _controls.initial_y_spinner->SetValue(settings.y_min);
+    _controls.maximum_y_spinner->SetValue(settings.y_max);
+    _controls.initial_z_spinner->SetValue(settings.z_min);
+    _controls.maximum_z_spinner->SetValue(settings.z_max);
+}
+
 calc::sinterbox_settings main_window::sinterbox_settings() const {
     return calc::sinterbox_settings{
         .clearance = _controls.clearance_spinner->GetValue(),
@@ -61,6 +71,13 @@ calc::sinterbox_settings main_window::sinterbox_settings() const {
         .width = _controls.width_spinner->GetValue(),
         .spacing = _controls.spacing_spinner->GetValue(),
     };
+}
+
+void main_window::sinterbox_settings(const calc::sinterbox_settings& settings) {
+    _controls.clearance_spinner->SetValue(settings.clearance);
+    _controls.thickness_spinner->SetValue(settings.thickness);
+    _controls.width_spinner->SetValue(settings.width);
+    _controls.spacing_spinner->SetValue(settings.spacing);
 }
 
 void main_window::on_select_parts(const std::vector<std::size_t>& indices) {

@@ -30,7 +30,9 @@ private:
     controls _controls;
     preferences _preferences;
     calc::stack_settings stack_settings() const;
+    void stack_settings(const calc::stack_settings&);
     calc::sinterbox_settings sinterbox_settings() const;
+    void sinterbox_settings(const calc::sinterbox_settings&);
 
     void on_select_parts(const std::vector<std::size_t>& indices);
     parts_list _parts_list{};
