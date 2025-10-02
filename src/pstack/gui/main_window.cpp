@@ -1,3 +1,4 @@
+#include "pstack/files/read.hpp"
 #include "pstack/files/stl.hpp"
 #include "pstack/gui/constants.hpp"
 #include "pstack/gui/main_window.hpp"
@@ -338,8 +339,7 @@ wxMenuBar* main_window::make_menu_bar() {
                 return on_new(event);
             }
             case menu_item::open: {
-                wxMessageBox("Not yet implemented", "Error", wxICON_WARNING);
-                break;
+                return on_open(event);
             }
             case menu_item::save: {
                 return on_save(event);
@@ -525,6 +525,44 @@ void main_window::on_close(wxCloseEvent& event) {
         }
     }
     _stacker_thread.stop();
+    event.Skip();
+}
+
+void main_window::on_open(wxCommandEvent& event) {
+    if ((_parts_list.rows() == 0 and _results_list.rows() == 0) or
+        wxMessageBox("Clear the current working session?",
+                     "Warning",
+                     wxYES_NO | wxNO_DEFAULT | wxICON_INFORMATION) == wxYES)
+    {
+        wxFileDialog dialog(this, "Open project", "", "",
+                            "PartStacker project files (*.pstack.json)|*.pstack.json",
+                            wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+
+        if (dialog.ShowModal() == wxID_CANCEL) {
+            return;
+        }
+
+        auto file = files::read_file(dialog.GetPath().ToStdString());
+        if (not file.has_value()) {
+            wxMessageBox(wxString::Format("Could not open path: %s\n\n%s", dialog.GetPath(), file.error()), "Error", wxICON_WARNING);
+            return;
+        }
+
+        auto state = save_state_from_json(*file);
+        if (not state.has_value()) {
+            wxMessageBox(wxString::Format("Could not read project file: %s\n\n%s", dialog.GetPath(), state.error()), "Error", wxICON_WARNING);
+            return;
+        }
+
+        _preferences = state->pref;
+        _viewport->scroll_direction(_preferences.invert_scroll);
+        _parts_list.show_extra(_preferences.extra_parts);
+        _viewport->show_bounding_box(_preferences.show_bounding_box);
+        stack_settings(state->stack);
+        sinterbox_settings(state->sinterbox);
+        _parts_list.replace_all(std::move(state->parts));
+        _results_list.replace_all(std::move(state->results));
+    }
     event.Skip();
 }
 
