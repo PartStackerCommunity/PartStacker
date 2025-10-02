@@ -20,6 +20,7 @@ enable_testing()
 
 find_package(Catch2 CONFIG REQUIRED)
 find_package(GLEW REQUIRED)
+find_package(jsoncons CONFIG REQUIRED)
 find_package(mdspan CONFIG REQUIRED)
 find_package(wxWidgets CONFIG REQUIRED COMPONENTS core base net gl)
 

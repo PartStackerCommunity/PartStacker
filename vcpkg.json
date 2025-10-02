@@ -3,6 +3,7 @@
   "dependencies": [
     "catch2",
     "glew",
+    "jsoncons",
     "mdspan",
     "wxwidgets"
   ]

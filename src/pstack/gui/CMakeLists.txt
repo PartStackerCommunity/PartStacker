@@ -25,6 +25,7 @@ set_target_properties(pstack_gui PROPERTIES
     PROJECT_LABEL "gui"
 )
 target_link_libraries(pstack_gui PRIVATE
+    jsoncons
     wx::net
     wx::core
     wx::base
