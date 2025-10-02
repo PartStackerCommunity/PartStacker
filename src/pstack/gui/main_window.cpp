@@ -499,7 +499,7 @@ void main_window::bind_all_controls() {
 }
 
 void main_window::on_new(wxCommandEvent& event) {
-    if (_parts_list.rows() == 0 or
+    if ((_parts_list.rows() == 0 and _results_list.rows() == 0) or
         wxMessageBox("Clear the current working session?",
                      "Warning",
                      wxYES_NO | wxNO_DEFAULT | wxICON_INFORMATION) == wxYES)
