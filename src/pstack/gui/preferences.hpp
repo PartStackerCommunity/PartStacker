@@ -7,6 +7,7 @@ struct preferences {
     bool invert_scroll = false;
     bool extra_parts = false;
     bool show_bounding_box = false;
+    bool load_environment_popup = true;
 };
 
 } // namespace pstack::gui

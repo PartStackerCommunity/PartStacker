@@ -332,7 +332,7 @@ wxMenuBar* main_window::make_menu_bar() {
          // Menu items cannot be 0 on Mac
         new_ = 1, open, save, close,
         import, export_,
-        pref_scroll, pref_extra, pref_bounding_box,
+        pref_scroll, pref_extra, pref_bounding_box, pref_env_popup,
         about, website, issue,
     };
     menu_bar->Bind(wxEVT_MENU, [this](wxCommandEvent& event) {
@@ -370,6 +370,10 @@ wxMenuBar* main_window::make_menu_bar() {
             case menu_item::pref_bounding_box: {
                 _preferences.show_bounding_box = not _preferences.show_bounding_box;
                 _viewport->show_bounding_box(_preferences.show_bounding_box);
+                break;
+            }
+            case menu_item::pref_env_popup: {
+                _preferences.load_environment_popup = not _preferences.load_environment_popup;
                 break;
             }
             case menu_item::about: {
@@ -426,7 +430,9 @@ void main_window::try_load_environment() {
         auto file = dir / ".pstack.json";
         if (std::filesystem::exists(file) and std::filesystem::is_regular_file(file)) {
             if (load_project(file.string())) {
-                wxMessageBox(wxString::Format("Loaded environment from: %s", file.string()), "PartStacker environment", wxICON_INFORMATION);
+                if (_preferences.load_environment_popup) {
+                    wxMessageBox(wxString::Format("Loaded environment from: %s", file.string()), "PartStacker environment", wxICON_INFORMATION);
+                }
             }
             break;
         }

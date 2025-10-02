@@ -26,7 +26,7 @@ using internal_save_state = basic_save_state<save_part, save_result>;
 } // namespace pstack::gui
 
 JSONCONS_N_MEMBER_TRAITS(pstack::gui::preferences, 0, // Nothing is required
-    invert_scroll, extra_parts, show_bounding_box
+    invert_scroll, extra_parts, show_bounding_box, load_environment_popup
 );
 JSONCONS_N_MEMBER_TRAITS(pstack::calc::stack_settings, 0, // Nothing is required
     resolution, x_min, x_max, y_min, y_max, z_min, z_max
@@ -104,7 +104,8 @@ const std::string_view the_schema = R"the_schema({
             "properties": {
                 "invert_scroll": { "type": "boolean" },
                 "extra_parts": { "type": "boolean" },
-                "show_bounding_box": { "type": "boolean" }
+                "show_bounding_box": { "type": "boolean" },
+                "load_environment_popup": { "type": "boolean" }
             }
         },
         "stack": {
