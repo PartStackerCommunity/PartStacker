@@ -25,6 +25,7 @@ public:
     const std::vector<calc::stack_result>& get_all() const {
         return _results;
     }
+    void replace_all(std::vector<calc::stack_result>&& results);
 
 private:
     std::vector<calc::stack_result> _results;

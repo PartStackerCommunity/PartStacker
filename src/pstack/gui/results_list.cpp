@@ -37,4 +37,11 @@ void results_list::delete_selected() {
     list_view::delete_selected(_results);
 }
 
+void results_list::replace_all(std::vector<calc::stack_result>&& results) {
+    list_view::delete_all();
+    for (auto& result : results) {
+        append(std::move(result));
+    }
+}
+
 } // namespace pstack::gui

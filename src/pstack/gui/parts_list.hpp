@@ -32,6 +32,7 @@ public:
         return *_parts.at(row);
     }
     std::vector<std::shared_ptr<const calc::part>> get_all() const;
+    void replace_all(std::vector<std::shared_ptr<calc::part>>&& parts);
 
     void update_label();
     wxWindow* label() const {

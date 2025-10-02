@@ -111,6 +111,21 @@ std::vector<std::shared_ptr<const calc::part>> parts_list::get_all() const {
     return out;
 }
 
+void parts_list::replace_all(std::vector<std::shared_ptr<calc::part>>&& parts) {
+    list_view::delete_all();
+    _parts = std::move(parts);
+    for (auto& ppart : _parts) {
+        auto& part = *ppart;
+        list_view::append({
+            part.name,
+            quantity_string(part, _show_extra),
+            wxString::Format("%.2f", part.volume / 1000),
+            std::to_string(part.triangle_count),
+            (part.mirrored ? "Mirrored" : "")
+        });
+    }
+}
+
 void parts_list::update_label() {
     _total_parts = 0;
     _total_volume = 0;
