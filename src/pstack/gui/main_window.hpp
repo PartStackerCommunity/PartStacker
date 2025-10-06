@@ -61,6 +61,9 @@ private:
     wxMenuBar* make_menu_bar();
     std::vector<wxMenuItem*> _disableable_menu_items;
 
+    void try_load_environment();
+    bool load_project(std::string json_path);
+
     void bind_all_controls();
     void on_new(wxCommandEvent& event);
     void on_close(wxCloseEvent& event);
