@@ -282,9 +282,10 @@ std::expected<in_save_state, std::string> save_state_from_json(std::string_view 
         };
         schema.validate(j, schema_reporter);
         if (not errors.empty()) {
-            errors.insert(errors.begin(), "File does not conform to schema:");
-            auto view = errors | std::views::join_with(std::string_view("\n    "));
-            std::string full_error{view.begin(), view.end()};
+            std::string full_error = "File does not conform to schema:";
+            for (std::string& error : errors) {
+                full_error += "\n    " + std::move(error);
+            }
             return std::unexpected(std::move(full_error));
         }
 
