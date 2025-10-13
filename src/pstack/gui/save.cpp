@@ -277,7 +277,7 @@ std::expected<in_save_state, std::string> save_state_from_json(std::string_view 
 
         std::vector<std::string> errors;
         const auto schema_reporter = [&](const jsoncons::jsonschema::validation_message& message) {
-            errors.push_back(std::format("{}: {}", message.instance_location().string(), message.message()));
+            errors.push_back(message.instance_location().string() + std::string(": ") + message.message());
             return jsoncons::jsonschema::walk_result::advance;
         };
         schema.validate(j, schema_reporter);
