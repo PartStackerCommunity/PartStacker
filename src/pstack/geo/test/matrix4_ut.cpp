@@ -117,7 +117,7 @@ TEMPLATE_TEST_CASE("rot4_x()", "[matrix4]",
     const auto theta = g.generate<T>();
     const auto c = std::cos(theta);
     const auto s = std::sin(theta);
-    const matrix4<T> actual = rot4_x(theta);
+    const matrix4<T> actual = rot4_x<T>(geo::radians{theta});
     CHECK(actual.xx == 1);
     CHECK(actual.xy == 0);
     CHECK(actual.xz == 0);
@@ -143,7 +143,7 @@ TEMPLATE_TEST_CASE("rot4_y()", "[matrix4]",
     const auto theta = g.generate<T>();
     const auto c = std::cos(theta);
     const auto s = std::sin(theta);
-    const matrix4<T> actual = rot4_y(theta);
+    const matrix4<T> actual = rot4_y<T>(geo::radians{theta});
     CHECK_THAT(actual.xx, WithinAbs(c, epsilon<T>));
     CHECK(actual.xy == 0);
     CHECK_THAT(actual.xz, WithinAbs(s, epsilon<T>));
@@ -169,7 +169,7 @@ TEMPLATE_TEST_CASE("rot4_z()", "[matrix4]",
     const auto theta = g.generate<T>();
     const auto c = std::cos(theta);
     const auto s = std::sin(theta);
-    const matrix4<T> actual = rot4_z(theta);
+    const matrix4<T> actual = rot4_z<T>(geo::radians{theta});
     CHECK_THAT(actual.xx, WithinAbs(c, epsilon<T>));
     CHECK_THAT(actual.xy, WithinAbs(-s, epsilon<T>));
     CHECK(actual.xz == 0);

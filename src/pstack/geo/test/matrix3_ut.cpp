@@ -148,7 +148,7 @@ TEMPLATE_TEST_CASE("rot3()", "[matrix3]",
     const auto [axis, theta] = g.generate<vector3<T>, T>();
     const auto c = std::cos(theta);
     const auto s = std::sin(theta);
-    const matrix3<T> actual = rot3(axis, theta);
+    const matrix3<T> actual = rot3(axis, geo::radians{theta});
     const auto n = normalize(axis);
     const matrix3<T> K = {    0, -n.z,  n.y,
                             n.z,    0, -n.x,
@@ -172,7 +172,7 @@ TEMPLATE_TEST_CASE("rot3_x()", "[matrix3]",
     const auto theta = g.generate<T>();
     const auto c = std::cos(theta);
     const auto s = std::sin(theta);
-    const matrix3<T> actual = rot3_x(theta);
+    const matrix3<T> actual = rot3_x<T>(geo::radians{theta});
     CHECK(actual.xx == 1);
     CHECK(actual.xy == 0);
     CHECK(actual.xz == 0);
@@ -191,7 +191,7 @@ TEMPLATE_TEST_CASE("rot3_y()", "[matrix3]",
     const auto theta = g.generate<T>();
     const auto c = std::cos(theta);
     const auto s = std::sin(theta);
-    const matrix3<T> actual = rot3_y(theta);
+    const matrix3<T> actual = rot3_y<T>(geo::radians{theta});
     CHECK_THAT(actual.xx, WithinAbs(c, epsilon<T>));
     CHECK(actual.xy == 0);
     CHECK_THAT(actual.xz, WithinAbs(s, epsilon<T>));
@@ -210,7 +210,7 @@ TEMPLATE_TEST_CASE("rot3_z()", "[matrix3]",
     const auto theta = g.generate<T>();
     const auto c = std::cos(theta);
     const auto s = std::sin(theta);
-    const matrix3<T> actual = rot3_z(theta);
+    const matrix3<T> actual = rot3_z<T>(geo::radians{theta});
     CHECK_THAT(actual.xx, WithinAbs(c, epsilon<T>));
     CHECK_THAT(actual.xy, WithinAbs(-s, epsilon<T>));
     CHECK(actual.xz == 0);

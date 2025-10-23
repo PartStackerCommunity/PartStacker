@@ -65,7 +65,7 @@ constexpr matrix3<T> operator*(const std::type_identity_t<T>& lhs, const matrix3
 }
 
 template <class T>
-constexpr matrix3<T> rot3(const vector3<T>& axis, const std::type_identity_t<T> theta) {
+constexpr matrix3<T> rot3(const vector3<T>& axis, const radians theta) {
     const T c = static_cast<T>(cos(theta));
     const T s = static_cast<T>(sin(theta));
     const auto n = normalize(axis);
@@ -77,7 +77,7 @@ constexpr matrix3<T> rot3(const vector3<T>& axis, const std::type_identity_t<T> 
 }
 
 template <class T>
-constexpr matrix3<T> rot3_x(const T theta) {
+constexpr matrix3<T> rot3_x(const radians theta) {
     const T c = static_cast<T>(cos(theta));
     const T s = static_cast<T>(sin(theta));
     return { 1,  0,  0,
@@ -86,7 +86,7 @@ constexpr matrix3<T> rot3_x(const T theta) {
 }
 
 template <class T>
-constexpr matrix3<T> rot3_y(const T theta) {
+constexpr matrix3<T> rot3_y(const radians theta) {
     const T c = static_cast<T>(cos(theta));
     const T s = static_cast<T>(sin(theta));
     return { c,  0,  s,
@@ -95,7 +95,7 @@ constexpr matrix3<T> rot3_y(const T theta) {
 }
 
 template <class T>
-constexpr matrix3<T> rot3_z(const T theta) {
+constexpr matrix3<T> rot3_z(const radians theta) {
     const T c = static_cast<T>(cos(theta));
     const T s = static_cast<T>(sin(theta));
     return { c, -s,  0,
