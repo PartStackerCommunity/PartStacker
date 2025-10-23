@@ -4,7 +4,7 @@ endif()
 
 set(PSTACK_VERSION_MAJOR 0)
 set(PSTACK_VERSION_MINOR 4)
-set(PSTACK_VERSION_PATCH 0)
+set(PSTACK_VERSION_PATCH 1)
 
 macro(pstack_configure_file input output)
     configure_file("${PROJECT_SOURCE_DIR}/src/configure/${input}" "${CMAKE_CURRENT_BINARY_DIR}/pstack_generated/${output}")
