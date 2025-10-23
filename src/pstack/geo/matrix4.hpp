@@ -46,7 +46,7 @@ inline constexpr matrix4<T> eye4 = { 1,  0,  0,  0,
                                      0,  0,  0,  1 };
 
 template <class T>
-constexpr matrix4<T> rot4_x(const T theta) {
+constexpr matrix4<T> rot4_x(const radians theta) {
     const T c = static_cast<T>(cos(theta));
     const T s = static_cast<T>(sin(theta));
     return { 1,  0,  0,  0,
@@ -56,7 +56,7 @@ constexpr matrix4<T> rot4_x(const T theta) {
 }
 
 template <class T>
-constexpr matrix4<T> rot4_y(const T theta) {
+constexpr matrix4<T> rot4_y(const radians theta) {
     const T c = static_cast<T>(cos(theta));
     const T s = static_cast<T>(sin(theta));
     return { c,  0,  s,  0,
@@ -66,7 +66,7 @@ constexpr matrix4<T> rot4_y(const T theta) {
 }
 
 template <class T>
-constexpr matrix4<T> rot4_z(const T theta) {
+constexpr matrix4<T> rot4_z(const radians theta) {
     const T c = static_cast<T>(cos(theta));
     const T s = static_cast<T>(sin(theta));
     return { c, -s,  0,  0,

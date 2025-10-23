@@ -2,6 +2,7 @@
 #define PSTACK_GEO_FUNCTIONS_HPP
 
 #include <bit>
+#include <cmath>
 #include <concepts>
 #include <cstdint>
 #include <numbers>
@@ -13,7 +14,25 @@ static_assert(sizeof(double) == sizeof(std::uint64_t));
 using std::numbers::pi;
 using std::numbers::sqrt2;
 
-constexpr double sin(double x) {
+struct radians;
+struct degrees;
+
+struct radians {
+    explicit radians(double val) : value(val) {}
+    radians(degrees d);
+    double value;
+};
+struct degrees {
+    explicit degrees(double val) : value(val) {}
+    degrees(radians r);
+    double value;
+};
+
+inline radians::radians(degrees d) : value(d.value * (pi / 180)) {}
+inline degrees::degrees(radians r) : value(r.value * (180 / pi)) {}
+
+constexpr double sin(radians r) {
+    double x = r.value;
     while (x > pi) {
         x -= 2 * pi;
     }
@@ -44,7 +63,8 @@ constexpr double sin(double x) {
     return result * sign;
 }
 
-constexpr double cos(double x) {
+constexpr double cos(radians r) {
+    double x = r.value;
     while (x > pi) {
         x -= 2 * pi;
     }

@@ -158,8 +158,8 @@ std::optional<stack_result> stack_impl(const stack_parameters& params, const std
             static constexpr std::size_t sections = 20;
             static constexpr double angle_diff = 2 * geo::pi / sections;
 
-            static constexpr geo::matrix3 rot_x = geo::rot3_x<float>(angle_diff);
-            static constexpr geo::matrix3 rot_y = geo::rot3_y<float>(angle_diff);
+            static constexpr geo::matrix3 rot_x = geo::rot3_x<float>(geo::radians{angle_diff});
+            static constexpr geo::matrix3 rot_y = geo::rot3_y<float>(geo::radians{angle_diff});
 
             int min_box_volume = std::numeric_limits<int>::max();
             double best_x = 0;
@@ -179,7 +179,7 @@ std::optional<stack_result> stack_impl(const stack_parameters& params, const std
                 }
             }
 
-            base_rotation = geo::rot3_y<float>(best_y) * geo::rot3_x<float>(best_x);
+            base_rotation = geo::rot3_y<float>(geo::radians{best_y}) * geo::rot3_x<float>(geo::radians{best_x});
         }
 
         // Set up array of parts

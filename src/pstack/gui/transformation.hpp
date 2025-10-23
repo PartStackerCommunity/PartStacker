@@ -18,7 +18,7 @@ public:
     }
 
     void rotate_by(float rx, float ry) {
-        _orientation = geo::rot4_y(ry) * geo::rot4_x(rx) * _orientation;
+        _orientation = geo::rot4_y<float>(geo::radians{ry}) * geo::rot4_x<float>(geo::radians{rx}) * _orientation;
         _recalculate();
     }
     void scale_mesh(float factor) {

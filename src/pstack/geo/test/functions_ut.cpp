@@ -22,36 +22,60 @@ TEST_CASE("sqrt2", "[functions]") {
 
 TEST_CASE("sin", "[functions]") {
     const auto num = g.generate<double>();
-    CHECK_THAT(sin(num), WithinAbs(std::sin(num), epsilon<double>));
+    CHECK_THAT(sin(radians{num}), WithinAbs(std::sin(num), epsilon<double>));
 }
 
-TEST_CASE("sin specific values", "[functions]") {
-    CHECK_THAT(sin(0), WithinAbs(0, epsilon<double>));
-    CHECK_THAT(sin(pi / 4), WithinAbs(sqrt2 / 2, epsilon<double>));
-    CHECK_THAT(sin(pi / 2), WithinAbs(1, epsilon<double>));
-    CHECK_THAT(sin(3 * pi / 4), WithinAbs(sqrt2 / 2, epsilon<double>));
-    CHECK_THAT(sin(pi), WithinAbs(0, epsilon<double>));
-    CHECK_THAT(sin(5 * pi / 4), WithinAbs(-sqrt2 / 2, epsilon<double>));
-    CHECK_THAT(sin(3 * pi / 2), WithinAbs(-1, epsilon<double>));
-    CHECK_THAT(sin(7 * pi / 4), WithinAbs(-sqrt2 / 2, epsilon<double>));
-    CHECK_THAT(sin(2 * pi), WithinAbs(0, epsilon<double>));
+TEST_CASE("sin specific radian values", "[functions]") {
+    CHECK_THAT(sin(radians{0}), WithinAbs(0, epsilon<double>));
+    CHECK_THAT(sin(radians{pi / 4}), WithinAbs(sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(sin(radians{pi / 2}), WithinAbs(1, epsilon<double>));
+    CHECK_THAT(sin(radians{3 * pi / 4}), WithinAbs(sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(sin(radians{pi}), WithinAbs(0, epsilon<double>));
+    CHECK_THAT(sin(radians{5 * pi / 4}), WithinAbs(-sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(sin(radians{3 * pi / 2}), WithinAbs(-1, epsilon<double>));
+    CHECK_THAT(sin(radians{7 * pi / 4}), WithinAbs(-sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(sin(radians{2 * pi}), WithinAbs(0, epsilon<double>));
+}
+
+TEST_CASE("sin specific degree values", "[functions]") {
+    CHECK_THAT(sin(degrees{0}), WithinAbs(0, epsilon<double>));
+    CHECK_THAT(sin(degrees{45}), WithinAbs(sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(sin(degrees{90}), WithinAbs(1, epsilon<double>));
+    CHECK_THAT(sin(degrees{135}), WithinAbs(sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(sin(degrees{180}), WithinAbs(0, epsilon<double>));
+    CHECK_THAT(sin(degrees{225}), WithinAbs(-sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(sin(degrees{270}), WithinAbs(-1, epsilon<double>));
+    CHECK_THAT(sin(degrees{315}), WithinAbs(-sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(sin(degrees{360}), WithinAbs(0, epsilon<double>));
 }
 
 TEST_CASE("cos", "[functions]") {
     const auto num = g.generate<double>();
-    CHECK_THAT(cos(num), WithinAbs(std::cos(num), epsilon<double>));
+    CHECK_THAT(cos(radians{num}), WithinAbs(std::cos(num), epsilon<double>));
 }
 
-TEST_CASE("cos specific values", "[functions]") {
-    CHECK_THAT(cos(0), WithinAbs(1, epsilon<double>));
-    CHECK_THAT(cos(pi / 4), WithinAbs(sqrt2 / 2, epsilon<double>));
-    CHECK_THAT(cos(pi / 2), WithinAbs(0, epsilon<double>));
-    CHECK_THAT(cos(3 * pi / 4), WithinAbs(-sqrt2 / 2, epsilon<double>));
-    CHECK_THAT(cos(pi), WithinAbs(-1, epsilon<double>));
-    CHECK_THAT(cos(5 * pi / 4), WithinAbs(-sqrt2 / 2, epsilon<double>));
-    CHECK_THAT(cos(3 * pi / 2), WithinAbs(0, epsilon<double>));
-    CHECK_THAT(cos(7 * pi / 4), WithinAbs(sqrt2 / 2, epsilon<double>));
-    CHECK_THAT(cos(2 * pi), WithinAbs(1, epsilon<double>));
+TEST_CASE("cos specific radian values", "[functions]") {
+    CHECK_THAT(cos(radians{0}), WithinAbs(1, epsilon<double>));
+    CHECK_THAT(cos(radians{pi / 4}), WithinAbs(sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(cos(radians{pi / 2}), WithinAbs(0, epsilon<double>));
+    CHECK_THAT(cos(radians{3 * pi / 4}), WithinAbs(-sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(cos(radians{pi}), WithinAbs(-1, epsilon<double>));
+    CHECK_THAT(cos(radians{5 * pi / 4}), WithinAbs(-sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(cos(radians{3 * pi / 2}), WithinAbs(0, epsilon<double>));
+    CHECK_THAT(cos(radians{7 * pi / 4}), WithinAbs(sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(cos(radians{2 * pi}), WithinAbs(1, epsilon<double>));
+}
+
+TEST_CASE("cos specific degree values", "[functions]") {
+    CHECK_THAT(cos(degrees{0}), WithinAbs(1, epsilon<double>));
+    CHECK_THAT(cos(degrees{45}), WithinAbs(sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(cos(degrees{90}), WithinAbs(0, epsilon<double>));
+    CHECK_THAT(cos(degrees{135}), WithinAbs(-sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(cos(degrees{180}), WithinAbs(-1, epsilon<double>));
+    CHECK_THAT(cos(degrees{225}), WithinAbs(-sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(cos(degrees{270}), WithinAbs(0, epsilon<double>));
+    CHECK_THAT(cos(degrees{315}), WithinAbs(sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(cos(degrees{360}), WithinAbs(1, epsilon<double>));
 }
 
 TEST_CASE("ceil fractional", "[functions]") {
