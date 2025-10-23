@@ -15,9 +15,9 @@ const std::array<geo::matrix3<float>, 32> arbitrary_rotations = [] {
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dis(0, 2 * geo::pi);
     for (std::size_t i = 6; i != 32; ++i) {
-        out[i] = geo::rot3_z(geo::radians{dis(gen)})
-               * geo::rot3_y(geo::radians{dis(gen)})
-               * geo::rot3_x(geo::radians{dis(gen)});
+        out[i] = geo::rot3_z<float>(geo::radians{dis(gen)})
+               * geo::rot3_y<float>(geo::radians{dis(gen)})
+               * geo::rot3_x<float>(geo::radians{dis(gen)});
     }
     return out;
 }();

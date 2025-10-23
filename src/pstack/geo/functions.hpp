@@ -18,18 +18,18 @@ struct radians;
 struct degrees;
 
 struct radians {
-    explicit radians(double val) : value(val) {}
-    radians(degrees d);
+    explicit constexpr radians(double val) : value(val) {}
+    constexpr radians(degrees d);
     double value;
 };
 struct degrees {
-    explicit degrees(double val) : value(val) {}
-    degrees(radians r);
+    explicit constexpr degrees(double val) : value(val) {}
+    constexpr degrees(radians r);
     double value;
 };
 
-inline radians::radians(degrees d) : value(d.value * (pi / 180)) {}
-inline degrees::degrees(radians r) : value(r.value * (180 / pi)) {}
+constexpr radians::radians(degrees d) : value(d.value * (pi / 180)) {}
+constexpr degrees::degrees(radians r) : value(r.value * (180 / pi)) {}
 
 constexpr double sin(radians r) {
     double x = r.value;
