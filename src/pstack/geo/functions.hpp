@@ -11,6 +11,7 @@ namespace pstack::geo {
 static_assert(sizeof(double) == sizeof(std::uint64_t));
 
 using std::numbers::pi;
+using std::numbers::sqrt2;
 
 constexpr double sin(double x) {
     while (x > pi) {

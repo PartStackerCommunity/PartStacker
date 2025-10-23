@@ -16,14 +16,42 @@ TEST_CASE("pi", "[functions]") {
     STATIC_CHECK(pi == std::numbers::pi);
 }
 
+TEST_CASE("sqrt2", "[functions]") {
+    STATIC_CHECK(sqrt2 == std::numbers::sqrt2);
+}
+
 TEST_CASE("sin", "[functions]") {
     const auto num = g.generate<double>();
     CHECK_THAT(sin(num), WithinAbs(std::sin(num), epsilon<double>));
 }
 
+TEST_CASE("sin specific values", "[functions]") {
+    CHECK_THAT(sin(0), WithinAbs(0, epsilon<double>));
+    CHECK_THAT(sin(pi / 4), WithinAbs(sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(sin(pi / 2), WithinAbs(1, epsilon<double>));
+    CHECK_THAT(sin(3 * pi / 4), WithinAbs(sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(sin(pi), WithinAbs(0, epsilon<double>));
+    CHECK_THAT(sin(5 * pi / 4), WithinAbs(-sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(sin(3 * pi / 2), WithinAbs(-1, epsilon<double>));
+    CHECK_THAT(sin(7 * pi / 4), WithinAbs(-sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(sin(2 * pi), WithinAbs(0, epsilon<double>));
+}
+
 TEST_CASE("cos", "[functions]") {
     const auto num = g.generate<double>();
     CHECK_THAT(cos(num), WithinAbs(std::cos(num), epsilon<double>));
+}
+
+TEST_CASE("cos specific values", "[functions]") {
+    CHECK_THAT(cos(0), WithinAbs(1, epsilon<double>));
+    CHECK_THAT(cos(pi / 4), WithinAbs(sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(cos(pi / 2), WithinAbs(0, epsilon<double>));
+    CHECK_THAT(cos(3 * pi / 4), WithinAbs(-sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(cos(pi), WithinAbs(-1, epsilon<double>));
+    CHECK_THAT(cos(5 * pi / 4), WithinAbs(-sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(cos(3 * pi / 2), WithinAbs(0, epsilon<double>));
+    CHECK_THAT(cos(7 * pi / 4), WithinAbs(sqrt2 / 2, epsilon<double>));
+    CHECK_THAT(cos(2 * pi), WithinAbs(1, epsilon<double>));
 }
 
 TEST_CASE("ceil fractional", "[functions]") {
