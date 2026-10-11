@@ -12,11 +12,11 @@ viewport::viewport(main_window* parent, const wxGLAttributes& canvasAttrs)
     : wxGLCanvas(parent, canvasAttrs)
 {
     wxGLContextAttrs ctx_attrs;
-    ctx_attrs.PlatformDefaults().CoreProfile().OGLVersion(3, 3).EndList();
+    ctx_attrs.PlatformDefaults().OGLVersion(3, 1).EndList();
     _opengl_context = std::make_unique<wxGLContext>(this, nullptr, &ctx_attrs);
 
     if (!_opengl_context->IsOK()) {
-        wxMessageBox("PartStacker requires an OpenGL 3.3 capable driver.",
+        wxMessageBox("PartStacker requires an OpenGL 3.1 capable driver.",
                      "OpenGL version error", wxOK | wxICON_INFORMATION, this);
         _opengl_context.reset();
     }
@@ -29,9 +29,9 @@ viewport::viewport(main_window* parent, const wxGLAttributes& canvasAttrs)
 }
 
 constexpr auto mesh_vertex_shader_source = R"(
-    #version 330 core
-    layout (location = 0) in vec3 aPos;
-    layout (location = 1) in vec3 aNormal;
+    #version 140
+    in vec3 aPos;
+    in vec3 aNormal;
     out vec4 frag_normal;
     uniform mat4 transform_vertices;
     uniform mat4 transform_normals;
@@ -42,7 +42,7 @@ constexpr auto mesh_vertex_shader_source = R"(
 )";
 
 constexpr auto mesh_fragment_shader_source = R"(
-    #version 330 core
+    #version 140
     in vec4 frag_normal;
     out vec4 frag_colour;
     void main() {
@@ -55,8 +55,8 @@ constexpr auto mesh_fragment_shader_source = R"(
 )";
 
 constexpr auto bounding_box_vertex_shader_source = R"(
-    #version 330 core
-    layout (location = 0) in vec3 aPos;
+    #version 140
+    in vec3 aPos;
     uniform mat4 transform_vertices;
     void main() {
         gl_Position = transform_vertices * vec4(aPos, 1.0);
@@ -64,7 +64,7 @@ constexpr auto bounding_box_vertex_shader_source = R"(
 )";
 
 constexpr auto bounding_box_fragment_shader_source = R"(
-    #version 330 core
+    #version 140
     out vec4 frag_colour;
     void main() {
         frag_colour = vec4(224.0 / 255.0, 110.0 / 255.0, 0.0, 1.0);
@@ -86,7 +86,10 @@ bool viewport::initialize() {
         return false;
     }
 
-    if (const auto err = _mesh_shader.initialize(mesh_vertex_shader_source, mesh_fragment_shader_source);
+    if (const auto err = _mesh_shader.initialize(
+            mesh_vertex_shader_source,
+            mesh_fragment_shader_source,
+            { { 0, "aPos" }, { 1, "aNormal" } });
         not err.has_value())
     {
         wxMessageBox(wxString::Format("Error in creating OpenGL shader for the mesh.\n%s", err.error()),
@@ -94,7 +97,10 @@ bool viewport::initialize() {
         return false;
     }
 
-    if (const auto err = _bounding_box_shader.initialize(bounding_box_vertex_shader_source, bounding_box_fragment_shader_source);
+    if (const auto err = _bounding_box_shader.initialize(
+            bounding_box_vertex_shader_source,
+            bounding_box_fragment_shader_source,
+            { { 0, "aPos" } });
         not err.has_value())
     {
         wxMessageBox(wxString::Format("Error in creating OpenGL shader for the bounding box.\n%s", err.error()),

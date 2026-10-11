@@ -33,9 +33,14 @@ void shader::use_program() {
     glUseProgram(_program);
 }
 
-std::expected<void, std::string> shader::initialize(const char* vertex_source, const char* fragment_source) {
+std::expected<void, std::string> shader::initialize(
+    const char* vertex_source,
+    const char* fragment_source,
+    const std::vector<attribute_binding>& attribute_bindings)
+{
     static_assert(std::same_as<const GLchar*, std::remove_const_t<decltype(vertex_source)>>);
     static_assert(std::same_as<const GLchar*, std::remove_const_t<decltype(fragment_source)>>);
+    static_assert(std::same_as<GLuint, decltype(std::declval<attribute_binding>().location)>);
 
     assert(0 == _program);
     _program = glCreateProgram();
@@ -55,6 +60,9 @@ std::expected<void, std::string> shader::initialize(const char* vertex_source, c
     GLint result;
     GLchar buffer[1024];
 
+    for (const auto& [location, name] : attribute_bindings) {
+        glBindAttribLocation(_program, location, name);
+    }
     glLinkProgram(_program);
     glGetProgramiv(_program, GL_LINK_STATUS, &result);
     if (GL_FALSE == result) {

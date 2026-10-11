@@ -3,6 +3,7 @@
 
 #include <expected>
 #include <string>
+#include <vector>
 #include "pstack/geo/matrix4.hpp"
 #include "pstack/geo/vector3.hpp"
 
@@ -13,7 +14,15 @@ public:
     shader() = default;
     void use_program();
 
-    std::expected<void, std::string> initialize(const char* vertex_source, const char* fragment_source);
+    struct attribute_binding {
+        unsigned int location;
+        const char* name;
+    };
+
+    std::expected<void, std::string> initialize(
+        const char* vertex_source,
+        const char* fragment_source,
+        const std::vector<attribute_binding>& attribute_bindings);
 
     void set_uniform(const char* name, const geo::matrix4<float>& matrix);
 
