@@ -1,6 +1,8 @@
 #ifndef PSTACK_VERSION_HPP
 #define PSTACK_VERSION_HPP
 
+#define PSTACK_COPYRIGHT_YEARS "${PSTACK_COPYRIGHT_YEARS}"
+
 namespace pstack {
 
 struct version {

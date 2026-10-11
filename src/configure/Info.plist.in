@@ -13,6 +13,6 @@
     <key>CFBundleShortVersionString</key>
     <string>${PSTACK_VERSION_MAJOR}.${PSTACK_VERSION_MINOR}.${PSTACK_VERSION_PATCH}</string>
     <key>NSHumanReadableCopyright</key>
-    <string>Copyright (c) 2025 Braden Ganetsky</string>
+    <string>Copyright (c) ${PSTACK_COPYRIGHT_YEARS} Braden Ganetsky</string>
 </dict>
 </plist>

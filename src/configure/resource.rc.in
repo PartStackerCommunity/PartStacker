@@ -17,7 +17,7 @@ BEGIN
             VALUE "FileDescription", "PartStacker Community Edition ${PSTACK_OUTPUT_TYPE}"
             VALUE "FileVersion", "${PSTACK_VERSION_MAJOR}.${PSTACK_VERSION_MINOR}.${PSTACK_VERSION_PATCH}"
             VALUE "InternalName", "${PSTACK_OUTPUT_FILE_NAME}.exe"
-            VALUE "LegalCopyright", "Copyright (c) 2025 Braden Ganetsky"
+            VALUE "LegalCopyright", "Copyright (c) ${PSTACK_COPYRIGHT_YEARS} Braden Ganetsky"
             VALUE "OriginalFilename", "${PSTACK_OUTPUT_FILE_NAME}.exe"
             VALUE "ProductName", "PartStacker Community Edition"
             VALUE "ProductVersion", "${PSTACK_VERSION_MAJOR}.${PSTACK_VERSION_MINOR}.${PSTACK_VERSION_PATCH}"
