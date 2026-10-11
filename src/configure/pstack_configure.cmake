@@ -9,7 +9,7 @@ endif()
 
 set(PSTACK_VERSION_MAJOR 0)
 set(PSTACK_VERSION_MINOR 4)
-set(PSTACK_VERSION_PATCH 1)
+set(PSTACK_VERSION_PATCH 2)
 set(PSTACK_COPYRIGHT_YEARS "2025-2026")
 
 macro(pstack_configure_file input output)
