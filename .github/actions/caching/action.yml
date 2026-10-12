@@ -13,4 +13,4 @@ runs:
         path: |
           build
           external/vcpkg
-        key: ${{ inputs.key-prefix }}-2025-07-18
+        key: ${{ inputs.key-prefix }}-2026-10-12

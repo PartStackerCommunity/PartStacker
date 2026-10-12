@@ -5,7 +5,7 @@ on:
 
 jobs:
   test-windows:
-    runs-on: windows-2025
+    runs-on: windows-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

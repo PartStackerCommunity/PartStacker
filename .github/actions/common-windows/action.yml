@@ -11,7 +11,7 @@ runs:
   steps:
     - name: Configure PartStacker
       run: |
-        cmake --preset ${{ inputs.config-preset }} -G "Visual Studio 17 2022" -A x64
+        cmake --preset ${{ inputs.config-preset }}
       shell: powershell
 
     - name: Build PartStacker
