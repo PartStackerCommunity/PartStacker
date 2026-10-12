@@ -34,9 +34,10 @@ To see if CMake is properly installed
     * Either close and reopen PowerShell
     * Or try installing again
 
-### Install Visual Studio 2022 Community Edition
+### Install Visual Studio 2026 Community Edition
 
-* If you don't have Visual Studio 2022 yet, visit [this download link](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&channel=Release&version=VS2022) for the installer
+* If you don't have Visual Studio 2026 yet, visit [this download link](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&channel=Stable) for the installer
+* If you already have Visual Studio 2026, then you're good to go!
 * If you already have Visual Studio 2022, open the Visual Studio Installer that's already on your computer
     * Ensure you have at least version 17.12
     * ![](./windows/visual_studio_version.png)
