@@ -104,7 +104,7 @@ If you choose to make edits to the code, repeat these steps to rebuild PartStack
 
 After building, the PartStacker GUI will be in the PartStacker directory
 
-* It will be located in `{PartStacker-directory}\bin`
+* It will be located in `{PartStacker-directory}\bin\Release`
 * Navigate to that location in your regular file explorer or in Windows PowerShell
 * Run the application!
 
